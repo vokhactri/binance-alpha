@@ -47,6 +47,20 @@ export async function getTokenInfo(address: Hex) {
       decimals: 18,
     }
   }
+  if (isAddressEqual(address, '0x55d398326f99059fF775485246999027B3197955')) {
+    return {
+      name: 'Tether USD',
+      symbol: 'USDT',
+      decimals: 18,
+    }
+  }
+  if (isAddressEqual(address, '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d')) {
+    return {
+      name: 'USD Coin',
+      symbol: 'USDC',
+      decimals: 18,
+    }
+  }
   const token = tokens.find((token) => isAddressEqual(token.contractAddress, address))
   if (token) {
     return {
@@ -119,8 +133,7 @@ export async function getSwapInfo(data: Hex) {
 }
 
 export function calculatePoints(value: number) {
-  if (value < 0)
-    throw new Error('Value must be non-negative')
+  if (value < 0) throw new Error('Value must be non-negative')
 
   if (value < 2) {
     return { value, points: 0, range: [0, 2] }
