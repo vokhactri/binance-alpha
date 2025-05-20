@@ -21,6 +21,7 @@ import {
   SWAP_ABI,
 } from '@/constants/abis'
 import tokens from '@/constants/tokens'
+import dayjs from '@/lib/dayjs'
 import type { Hex } from 'viem'
 
 export function cn(...inputs: ClassValue[]) {
@@ -37,6 +38,16 @@ export function getPublicClient() {
     chain: bsc,
     transport: http('https://bsc.blockrazor.xyz'),
   })
+}
+
+export function getDynamicTimeRange() {
+  const now = dayjs()
+  const isBefore8AM = now.hour() < 8
+  const baseDay = isBefore8AM ? now.subtract(1, 'day') : now
+  return [
+    baseDay.set('hour', 8).startOf('hour').format('YYYY-MM-DD HH:mm:ss'),
+    baseDay.add(1, 'day').set('hour', 7).endOf('hour').format('YYYY-MM-DD HH:mm:ss'),
+  ]
 }
 
 export async function getTokenInfo(address: Hex) {

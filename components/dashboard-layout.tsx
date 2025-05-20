@@ -1,8 +1,8 @@
 'use client'
 
 import { motion } from 'motion/react'
-import dayjs from '@/lib/dayjs'
 import { TransactionSearch } from '@/components/transaction-search'
+import { getDynamicTimeRange } from '@/lib/utils'
 import type { Hex } from 'viem'
 
 interface DashboardLayoutProps {
@@ -18,10 +18,7 @@ export default function DashboardLayout({
   defaultAddress = '' as Hex,
   onSearch,
 }: DashboardLayoutProps) {
-  const [startTime, endTime] = [
-    dayjs().startOf('day').add(8, 'hour').format('YYYY-MM-DD HH:mm:ss'),
-    dayjs().endOf('day').add(8, 'hour').format('YYYY-MM-DD HH:mm:ss'),
-  ]
+  const [startTime, endTime] = getDynamicTimeRange()
 
   return (
     <div className="container mx-auto py-8 px-4">
