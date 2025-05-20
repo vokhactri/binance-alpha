@@ -6,7 +6,7 @@ import { getSwapInfo, retry } from './utils'
 import type { Hex } from 'viem'
 import type { AlphaTokenInfo, Transaction } from '@/types'
 
-const API_KEY = process.env.NEXT_PUBLIC_BSC_SCAN_API_KEY || 'UV9MI8SMEU619HPQAKDQ8BPXINMPGP5EKG'
+const API_KEY = process.env.NEXT_PUBLIC_BSC_SCAN_API_KEY || ''
 
 const client = axios.create({
   baseURL: 'https://api.bscscan.com',
@@ -55,6 +55,7 @@ export async function getTransactions(address: Hex, startblock = 0, endblock = 9
       endblock,
       page: 1,
       offset: 10000,
+      apikey: 'UV9MI8SMEU619HPQAKDQ8BPXINMPGP5EKG',
     },
   })
 
