@@ -13,15 +13,24 @@ const client = axios.create({
   },
 })
 
+// export async function getTokenPrice(symbol: string): Promise<number> {
+//   if (symbol === 'USDT') return 1
+//   const res = await axios.get('https://api.binance.com/api/v3/ticker/price', {
+//     params: {
+//       symbol: `${symbol}USDT`,
+//     },
+//   })
+//   return Number(res.data.price)
+// }
+
 export async function getTokenPrice(symbol: string): Promise<number> {
-  if (symbol === 'USDT') return 1
-  // const res = await axios.get('https://api.binance.com/api/v3/ticker/price', {
-  //   params: {
-  //     symbol: `${symbol}USDT`,
-  //   },
-  // })
-  // return Number(res.data.price)
-  return 1
+  const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
+    params: {
+      fsym: symbol,
+      tsyms: 'USD',
+    },
+  })
+  return res.data.USD
 }
 
 export async function getBlockNumberByTimestamp(timestamp: number) {
@@ -57,7 +66,7 @@ export async function getTransactions(address: Hex, startblock = 0, endblock = 9
     },
   })
 
-  if(!Array.isArray(res.data.result)) {
+  if (!Array.isArray(res.data.result)) {
     return []
   }
 
