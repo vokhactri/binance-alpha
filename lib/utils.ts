@@ -12,14 +12,8 @@ import {
   formatUnits,
 } from 'viem'
 import { bsc } from 'viem/chains'
-import {
-  ERC20_ABI,
-  PROXY_SWAP_ABI,
-  PROXY_SWAP_V2_ABI,
-  CALL_ONEINCH_ABI,
-  SWAP_EXACT_IN_ABI,
-  SWAP_ABI,
-} from '@/constants/abis'
+import { ERC20_ABI } from '@/constants/abis'
+import { INNER_SWAP_ROUTES, SWAP_ROUTES } from '../constants/routes'
 import tokens from '@/constants/tokens'
 import dayjs from '@/lib/dayjs'
 import type { Hex } from 'viem'
@@ -31,6 +25,19 @@ export function cn(...inputs: ClassValue[]) {
 export function formatAddress(address: string): string {
   if (!address) return ''
   return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
+
+export function getValueByPath<T = unknown>(data: any, path: Array<string | number>): T | undefined {
+  return path.reduce((acc: any, key: string | number) => {
+    if (acc === undefined || acc === null) return undefined
+    if (Array.isArray(acc) || (typeof key === 'number' && acc.length !== undefined)) {
+      return acc[key as number]
+    }
+    if (typeof acc === 'object' && acc !== null) {
+      return acc[key as string]
+    }
+    return undefined
+  }, data)
 }
 
 export function getPublicClient() {
@@ -90,56 +97,42 @@ export async function getTokenInfo(address: Hex) {
 }
 
 export async function getSwapInfo(data: Hex) {
-  let amount: number
-  let _fromTokenAddress: Hex
-  let _toTokenAddress: Hex
-  let _fromTokenSymbol: string
-  let _toTokenSymbol: string
+  const swapRoute = SWAP_ROUTES.find((route) => data.startsWith(route.method))
+  if (!swapRoute) {
+    throw new Error(`Unsupported swap route: ${data}`)
+  }
+  const { amountPath, callDataPath, abi } = swapRoute
+  const { args } = decodeFunctionData({
+    abi,
+    data,
+  })
+  const fromTokenAmount = getValueByPath<bigint>(args, amountPath)!
+  const callData = getValueByPath<Hex>(args, callDataPath)!
 
-  if (data.startsWith('0xdad12b6c') || data.startsWith('0xe5e8894b')) {
-    const { args } = decodeFunctionData({
-      abi: data.startsWith('0xdad12b6c') ? PROXY_SWAP_ABI : PROXY_SWAP_V2_ABI,
-      data,
-    })
-    const callData = args![args!.length - 1] as Hex
-    const { args: swapArgs } = decodeFunctionData({
-      abi: SWAP_EXACT_IN_ABI,
-      data: callData,
-    })
-    const { inputToken, outputToken } = swapArgs[1]
-    const { symbol: fromTokenSymbol, decimals: fromTokenDecimals } = await getTokenInfo(inputToken)
-    const { symbol: toTokenSymbol } = await getTokenInfo(outputToken)
-    amount = Number(formatUnits(args![2] as bigint, fromTokenDecimals))
-    _fromTokenAddress = inputToken
-    _toTokenAddress = outputToken
-    _fromTokenSymbol = fromTokenSymbol
-    _toTokenSymbol = toTokenSymbol
-  } else {
-    const { args } = decodeFunctionData({
-      abi: CALL_ONEINCH_ABI,
-      data,
-    })
-    const callData = args![args!.length - 1] as Hex
-    const { args: swapArgs } = decodeFunctionData({
-      abi: SWAP_ABI,
-      data: callData,
-    })
-    const { srcToken, dstToken } = swapArgs[1]
-    const { symbol: fromTokenSymbol, decimals: fromTokenDecimals } = await getTokenInfo(srcToken)
-    const { symbol: toTokenSymbol } = await getTokenInfo(dstToken)
-    amount = Number(formatUnits(args![1] as bigint, fromTokenDecimals))
-    _fromTokenAddress = srcToken
-    _toTokenAddress = dstToken
-    _fromTokenSymbol = fromTokenSymbol
-    _toTokenSymbol = toTokenSymbol
+  const innerSwapRoute = INNER_SWAP_ROUTES.find((route) => callData.startsWith(route.method))
+  if (!innerSwapRoute) {
+    throw new Error(`Unsupported inner swap route: ${callData}`)
+  }
+  const { fromTokenPath, toTokenPath, abi: innerAbi } = innerSwapRoute
+  const { args: swapArgs } = decodeFunctionData({
+    abi: innerAbi,
+    data: callData,
+  })
+  let fromTokenAddress = getValueByPath<Hex | bigint>(swapArgs, fromTokenPath)!
+  if (typeof fromTokenAddress === 'bigint') {
+    fromTokenAddress = `0x${fromTokenAddress.toString(16)}`
   }
 
+  const toTokenAddress = getValueByPath<Hex>(swapArgs, toTokenPath)!
+  const { symbol: fromTokenSymbol, decimals: fromTokenDecimals } = await getTokenInfo(fromTokenAddress)
+  const { symbol: toTokenSymbol} = await getTokenInfo(toTokenAddress)
+
   return {
-    amount,
-    fromTokenAddress: _fromTokenAddress,
-    toTokenAddress: _toTokenAddress,
-    fromTokenSymbol: _fromTokenSymbol,
-    toTokenSymbol: _toTokenSymbol,
+    amount: Number(formatUnits(fromTokenAmount, fromTokenDecimals)),
+    fromTokenAddress,
+    fromTokenSymbol,
+    toTokenAddress,
+    toTokenSymbol,
   }
 }
 
