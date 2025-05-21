@@ -85,16 +85,9 @@ export async function getTransactions(address: Hex, startblock = 0, endblock = 9
   const promises = transactions.map((tx) => limit(() => retry(getSwapInfo, Number.MAX_SAFE_INTEGER)(tx.input)))
   const swapInfos = await Promise.all(promises)
 
-  const [bnbPrice, usdtPrice, usdcPrice] = await Promise.all([
-    getTokenPrice('BNB'),
-    getTokenPrice('USDT'),
-    getTokenPrice('USDC'),
-  ])
-  const priceMap = {
-    BNB: bnbPrice,
-    USDT: usdtPrice,
-    USDC: usdcPrice,
-  }
+  const fromTokens = Array.from(new Set(swapInfos.map((tx) => tx.fromTokenSymbol)))
+  const prices = await Promise.all(fromTokens.map(getTokenPrice))
+  const priceMap = Object.fromEntries(fromTokens.map((token, index) => [token, prices[index]]))
 
   return transactions
     .map((tx, index) => ({
@@ -103,9 +96,8 @@ export async function getTransactions(address: Hex, startblock = 0, endblock = 9
       ...swapInfos[index],
       amountUSD: swapInfos[index].amount * priceMap[swapInfos[index].fromTokenSymbol as keyof typeof priceMap],
     }))
-    .filter(
-      (tx) =>
-        ['BNB', 'USDT', 'USDC'].includes(tx.fromTokenSymbol) &&
-        tokens.some((token) => isAddressEqual(token.contractAddress, tx.toTokenAddress))
+    .filter((tx) =>
+      // ['BNB', 'USDT', 'USDC'].includes(tx.fromTokenSymbol) &&
+      tokens.some((token) => isAddressEqual(token.contractAddress, tx.toTokenAddress))
     )
 }
