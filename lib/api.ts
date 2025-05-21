@@ -7,9 +7,10 @@ import type { Hex } from 'viem'
 import type { AlphaTokenInfo, Transaction } from '@/types'
 
 const client = axios.create({
-  baseURL: 'https://api.bscscan.com',
+  baseURL: 'https://api.etherscan.io',
   params: {
-    apikey: process.env.NEXT_PUBLIC_BSC_SCAN_API_KEY,
+    apikey: process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY,
+    chainId: 56,
   },
 })
 
@@ -34,7 +35,7 @@ export async function getTokenPrice(symbol: string): Promise<number> {
 }
 
 export async function getBlockNumberByTimestamp(timestamp: number) {
-  const res = await client.get('/api', {
+  const res = await client.get('/v2/api', {
     params: {
       module: 'block',
       action: 'getblocknobytime',
@@ -54,7 +55,7 @@ export async function getAlphaTokens() {
 }
 
 export async function getTransactions(address: Hex, startblock = 0, endblock = 99999999) {
-  const res = await client.get('/api', {
+  const res = await client.get('/v2/api', {
     params: {
       module: 'account',
       action: 'txlist',
@@ -96,8 +97,5 @@ export async function getTransactions(address: Hex, startblock = 0, endblock = 9
       ...swapInfos[index],
       amountUSD: swapInfos[index].amount * priceMap[swapInfos[index].fromTokenSymbol as keyof typeof priceMap],
     }))
-    .filter((tx) =>
-      //   ['BNB', 'USDT', 'USDC'].includes(tx.fromTokenSymbol) &&
-      tokens.some((token) => isAddressEqual(token.contractAddress, tx.toTokenAddress))
-    )
+    .filter((tx) => tokens.some((token) => isAddressEqual(token.contractAddress, tx.toTokenAddress)))
 }
