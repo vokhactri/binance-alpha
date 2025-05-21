@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "fetch": "tsx commands/fetch.ts",
+    "fetch": "tsx scripts/fetch.ts",
     "lint": "next lint"
   },
   "dependencies": {
