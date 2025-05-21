@@ -1,7 +1,7 @@
 import axios from 'axios'
 import pLimit from 'p-limit'
 import { isAddressEqual } from 'viem'
-// import tokens from '@/constants/tokens'
+import tokens from '@/constants/tokens'
 import { getSwapInfo, retry } from './utils'
 import type { Hex } from 'viem'
 import type { AlphaTokenInfo, Transaction } from '@/types'
@@ -89,14 +89,15 @@ export async function getTransactions(address: Hex, startblock = 0, endblock = 9
   const prices = await Promise.all(fromTokens.map(getTokenPrice))
   const priceMap = Object.fromEntries(fromTokens.map((token, index) => [token, prices[index]]))
 
-  return transactions.map((tx, index) => ({
-    hash: tx.hash,
-    timestamp: Number(tx.timeStamp),
-    ...swapInfos[index],
-    amountUSD: swapInfos[index].amount * priceMap[swapInfos[index].fromTokenSymbol as keyof typeof priceMap],
-  }))
-  // .filter((tx) =>
-  //   ['BNB', 'USDT', 'USDC'].includes(tx.fromTokenSymbol) &&
-  //   tokens.some((token) => isAddressEqual(token.contractAddress, tx.toTokenAddress))
-  // )
+  return transactions
+    .map((tx, index) => ({
+      hash: tx.hash,
+      timestamp: Number(tx.timeStamp),
+      ...swapInfos[index],
+      amountUSD: swapInfos[index].amount * priceMap[swapInfos[index].fromTokenSymbol as keyof typeof priceMap],
+    }))
+    .filter((tx) =>
+      //   ['BNB', 'USDT', 'USDC'].includes(tx.fromTokenSymbol) &&
+      tokens.some((token) => isAddressEqual(token.contractAddress, tx.toTokenAddress))
+    )
 }
