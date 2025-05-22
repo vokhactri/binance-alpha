@@ -191,6 +191,158 @@ export const INNER_SWAP_ROUTES = [
     ],
   },
   {
+    method: '0xe99bfa95',
+    fromTokenPath: [0, 'fromToken'],
+    toTokenPath: [0, 'toToken'],
+    abi: [
+      {
+        inputs: [
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'fromToken',
+                type: 'uint256',
+              },
+              {
+                internalType: 'address',
+                name: 'toToken',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromTokenAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minReturnAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'deadLine',
+                type: 'uint256',
+              },
+            ],
+            internalType: 'struct DexRouter.BaseRequest',
+            name: 'baseRequest',
+            type: 'tuple',
+          },
+          {
+            internalType: 'uint256[]',
+            name: 'batchesAmount',
+            type: 'uint256[]',
+          },
+          {
+            components: [
+              {
+                internalType: 'address[]',
+                name: 'mixAdapters',
+                type: 'address[]',
+              },
+              {
+                internalType: 'address[]',
+                name: 'assetTo',
+                type: 'address[]',
+              },
+              {
+                internalType: 'uint256[]',
+                name: 'rawData',
+                type: 'uint256[]',
+              },
+              {
+                internalType: 'bytes[]',
+                name: 'extraData',
+                type: 'bytes[]',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromToken',
+                type: 'uint256',
+              },
+            ],
+            internalType: 'struct DexRouter.RouterPath[][]',
+            name: 'batches',
+            type: 'tuple[][]',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'pathIndex',
+                type: 'uint256',
+              },
+              {
+                internalType: 'address',
+                name: 'payer',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'fromToken',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'toToken',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromTokenAmountMax',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'toTokenAmountMax',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'salt',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'deadLine',
+                type: 'uint256',
+              },
+              {
+                internalType: 'bool',
+                name: 'isPushOrder',
+                type: 'bool',
+              },
+              {
+                internalType: 'bytes',
+                name: 'extension',
+                type: 'bytes',
+              },
+            ],
+            internalType: 'struct PMMLib.PMMSwapRequest[]',
+            name: 'extraData',
+            type: 'tuple[]',
+          },
+          {
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+          },
+        ],
+        name: 'smartSwapByInvest',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'returnAmount',
+            type: 'uint256',
+          },
+        ],
+        stateMutability: 'payable',
+        type: 'function',
+      },
+    ],
+  },
+  {
     method: '0xb80c2f09',
     fromTokenPath: [1, 'fromToken'],
     toTokenPath: [1, 'toToken'],
@@ -337,6 +489,807 @@ export const INNER_SWAP_ROUTES = [
             type: 'uint256',
           },
         ],
+        stateMutability: 'payable',
+        type: 'function',
+      },
+    ],
+  },
+  {
+    method: '0xd1b260d4',
+    fromTokenPath: [1, 'fromToken'],
+    toTokenPath: [1, 'toToken'],
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'orderId',
+            type: 'uint256',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'fromToken',
+                type: 'uint256',
+              },
+              {
+                internalType: 'address',
+                name: 'toToken',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromTokenAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minReturnAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'deadLine',
+                type: 'uint256',
+              },
+            ],
+            internalType: 'struct DexRouter.BaseRequest',
+            name: 'baseRequest',
+            type: 'tuple',
+          },
+          {
+            internalType: 'uint256[]',
+            name: 'batchesAmount',
+            type: 'uint256[]',
+          },
+          {
+            components: [
+              {
+                internalType: 'address[]',
+                name: 'mixAdapters',
+                type: 'address[]',
+              },
+              {
+                internalType: 'address[]',
+                name: 'assetTo',
+                type: 'address[]',
+              },
+              {
+                internalType: 'uint256[]',
+                name: 'rawData',
+                type: 'uint256[]',
+              },
+              {
+                internalType: 'bytes[]',
+                name: 'extraData',
+                type: 'bytes[]',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromToken',
+                type: 'uint256',
+              },
+            ],
+            internalType: 'struct DexRouter.RouterPath[][]',
+            name: 'batches',
+            type: 'tuple[][]',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'pathIndex',
+                type: 'uint256',
+              },
+              {
+                internalType: 'address',
+                name: 'payer',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'fromToken',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'toToken',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromTokenAmountMax',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'toTokenAmountMax',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'salt',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'deadLine',
+                type: 'uint256',
+              },
+              {
+                internalType: 'bool',
+                name: 'isPushOrder',
+                type: 'bool',
+              },
+              {
+                internalType: 'bytes',
+                name: 'extension',
+                type: 'bytes',
+              },
+            ],
+            internalType: 'struct PMMLib.PMMSwapRequest[]',
+            name: 'extraData',
+            type: 'tuple[]',
+          },
+        ],
+        name: 'smartSwapByOrderIdByXBridge',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'returnAmount',
+            type: 'uint256',
+          },
+        ],
+        stateMutability: 'payable',
+        type: 'function',
+      },
+    ],
+  },
+  {
+    method: '0x03b87e5f',
+    fromTokenPath: [2, 'fromToken'],
+    toTokenPath: [2, 'toToken'],
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'orderId',
+            type: 'uint256',
+          },
+          {
+            internalType: 'address',
+            name: 'receiver',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'fromToken',
+                type: 'uint256',
+              },
+              {
+                internalType: 'address',
+                name: 'toToken',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromTokenAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minReturnAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'deadLine',
+                type: 'uint256',
+              },
+            ],
+            internalType: 'struct DexRouter.BaseRequest',
+            name: 'baseRequest',
+            type: 'tuple',
+          },
+          {
+            internalType: 'uint256[]',
+            name: 'batchesAmount',
+            type: 'uint256[]',
+          },
+          {
+            components: [
+              {
+                internalType: 'address[]',
+                name: 'mixAdapters',
+                type: 'address[]',
+              },
+              {
+                internalType: 'address[]',
+                name: 'assetTo',
+                type: 'address[]',
+              },
+              {
+                internalType: 'uint256[]',
+                name: 'rawData',
+                type: 'uint256[]',
+              },
+              {
+                internalType: 'bytes[]',
+                name: 'extraData',
+                type: 'bytes[]',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromToken',
+                type: 'uint256',
+              },
+            ],
+            internalType: 'struct DexRouter.RouterPath[][]',
+            name: 'batches',
+            type: 'tuple[][]',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'pathIndex',
+                type: 'uint256',
+              },
+              {
+                internalType: 'address',
+                name: 'payer',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'fromToken',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'toToken',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromTokenAmountMax',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'toTokenAmountMax',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'salt',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'deadLine',
+                type: 'uint256',
+              },
+              {
+                internalType: 'bool',
+                name: 'isPushOrder',
+                type: 'bool',
+              },
+              {
+                internalType: 'bytes',
+                name: 'extension',
+                type: 'bytes',
+              },
+            ],
+            internalType: 'struct PMMLib.PMMSwapRequest[]',
+            name: 'extraData',
+            type: 'tuple[]',
+          },
+        ],
+        name: 'smartSwapTo',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'returnAmount',
+            type: 'uint256',
+          },
+        ],
+        stateMutability: 'payable',
+        type: 'function',
+      },
+    ],
+  },
+  {
+    method: '0x5fd9ae2e',
+    fromTokenPath: [5, 'sendingAssetId'],
+    toTokenPath: [5, 'receivingAssetId'],
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: '_transactionId',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'string',
+            name: '_integrator',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: '_referrer',
+            type: 'string',
+          },
+          {
+            internalType: 'address payable',
+            name: '_receiver',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: '_minAmountOut',
+            type: 'uint256',
+          },
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'callTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'approveTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'sendingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'receivingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'bytes',
+                name: 'callData',
+                type: 'bytes',
+              },
+              {
+                internalType: 'bool',
+                name: 'requiresDeposit',
+                type: 'bool',
+              },
+            ],
+            internalType: 'struct LibSwap.SwapData[]',
+            name: '_swapData',
+            type: 'tuple[]',
+          },
+        ],
+        name: 'swapTokensMultipleV3ERC20ToERC20',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+  },
+  {
+    method: '0x2c57e884',
+    fromTokenPath: [5, 'sendingAssetId'],
+    toTokenPath: [5, 'receivingAssetId'],
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: '_transactionId',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'string',
+            name: '_integrator',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: '_referrer',
+            type: 'string',
+          },
+          {
+            internalType: 'address payable',
+            name: '_receiver',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: '_minAmountOut',
+            type: 'uint256',
+          },
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'callTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'approveTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'sendingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'receivingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'bytes',
+                name: 'callData',
+                type: 'bytes',
+              },
+              {
+                internalType: 'bool',
+                name: 'requiresDeposit',
+                type: 'bool',
+              },
+            ],
+            internalType: 'struct LibSwap.SwapData[]',
+            name: '_swapData',
+            type: 'tuple[]',
+          },
+        ],
+        name: 'swapTokensMultipleV3ERC20ToNative',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+  },
+  {
+    method: '0x736eac0b',
+    fromTokenPath: [5, 'sendingAssetId'],
+    toTokenPath: [5, 'receivingAssetId'],
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: '_transactionId',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'string',
+            name: '_integrator',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: '_referrer',
+            type: 'string',
+          },
+          {
+            internalType: 'address payable',
+            name: '_receiver',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: '_minAmountOut',
+            type: 'uint256',
+          },
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'callTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'approveTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'sendingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'receivingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'bytes',
+                name: 'callData',
+                type: 'bytes',
+              },
+              {
+                internalType: 'bool',
+                name: 'requiresDeposit',
+                type: 'bool',
+              },
+            ],
+            internalType: 'struct LibSwap.SwapData[]',
+            name: '_swapData',
+            type: 'tuple[]',
+          },
+        ],
+        name: 'swapTokensMultipleV3NativeToERC20',
+        outputs: [],
+        stateMutability: 'payable',
+        type: 'function',
+      },
+    ],
+  },
+  {
+    method: '0x4666fc80',
+    fromTokenPath: [5, 'sendingAssetId'],
+    toTokenPath: [5, 'receivingAssetId'],
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: '_transactionId',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'string',
+            name: '_integrator',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: '_referrer',
+            type: 'string',
+          },
+          {
+            internalType: 'address payable',
+            name: '_receiver',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: '_minAmountOut',
+            type: 'uint256',
+          },
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'callTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'approveTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'sendingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'receivingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'bytes',
+                name: 'callData',
+                type: 'bytes',
+              },
+              {
+                internalType: 'bool',
+                name: 'requiresDeposit',
+                type: 'bool',
+              },
+            ],
+            internalType: 'struct LibSwap.SwapData',
+            name: '_swapData',
+            type: 'tuple',
+          },
+        ],
+        name: 'swapTokensSingleV3ERC20ToERC20',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+  },
+  {
+    method: '0x733214a3',
+    fromTokenPath: [5, 'sendingAssetId'],
+    toTokenPath: [5, 'receivingAssetId'],
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: '_transactionId',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'string',
+            name: '_integrator',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: '_referrer',
+            type: 'string',
+          },
+          {
+            internalType: 'address payable',
+            name: '_receiver',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: '_minAmountOut',
+            type: 'uint256',
+          },
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'callTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'approveTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'sendingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'receivingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'bytes',
+                name: 'callData',
+                type: 'bytes',
+              },
+              {
+                internalType: 'bool',
+                name: 'requiresDeposit',
+                type: 'bool',
+              },
+            ],
+            internalType: 'struct LibSwap.SwapData',
+            name: '_swapData',
+            type: 'tuple',
+          },
+        ],
+        name: 'swapTokensSingleV3ERC20ToNative',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+  },
+  {
+    method: '0xaf7060fd',
+    fromTokenPath: [5, 'sendingAssetId'],
+    toTokenPath: [5, 'receivingAssetId'],
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: '_transactionId',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'string',
+            name: '_integrator',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: '_referrer',
+            type: 'string',
+          },
+          {
+            internalType: 'address payable',
+            name: '_receiver',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: '_minAmountOut',
+            type: 'uint256',
+          },
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'callTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'approveTo',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'sendingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'receivingAssetId',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'fromAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'bytes',
+                name: 'callData',
+                type: 'bytes',
+              },
+              {
+                internalType: 'bool',
+                name: 'requiresDeposit',
+                type: 'bool',
+              },
+            ],
+            internalType: 'struct LibSwap.SwapData',
+            name: '_swapData',
+            type: 'tuple',
+          },
+        ],
+        name: 'swapTokensSingleV3NativeToERC20',
+        outputs: [],
         stateMutability: 'payable',
         type: 'function',
       },

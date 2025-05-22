@@ -17,6 +17,7 @@ import { INNER_SWAP_ROUTES, SWAP_ROUTES } from '../constants/routes'
 import tokens from '@/constants/tokens'
 import dayjs from '@/lib/dayjs'
 import type { Hex } from 'viem'
+import type { Transaction } from '@/types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -96,22 +97,23 @@ export async function getTokenInfo(address: Hex) {
   return { symbol, decimals }
 }
 
-export async function getSwapInfo(data: Hex) {
-  const swapRoute = SWAP_ROUTES.find((route) => data.startsWith(route.method))
+export async function getSwapInfo(tx: Transaction) {
+  const { hash, methodId, input } = tx
+  const swapRoute = SWAP_ROUTES.find((route) => input.startsWith(route.method))
   if (!swapRoute) {
-    throw new Error(`Unsupported swap route: ${data}`)
+    throw new Error(`Unsupported swap route: [${methodId}](${hash}) `)
   }
   const { amountPath, callDataPath, abi } = swapRoute
   const { args } = decodeFunctionData({
     abi,
-    data,
+    data: input,
   })
   const fromTokenAmount = getValueByPath<bigint>(args, amountPath)!
   const callData = getValueByPath<Hex>(args, callDataPath)!
 
   const innerSwapRoute = INNER_SWAP_ROUTES.find((route) => callData.startsWith(route.method))
   if (!innerSwapRoute) {
-    throw new Error(`Unsupported inner swap route: ${callData}`)
+    throw new Error(`Unsupported inner swap route: [${callData.slice(0, 10)}](${hash})`)
   }
   const { fromTokenPath, toTokenPath, abi: innerAbi } = innerSwapRoute
   const { args: swapArgs } = decodeFunctionData({
@@ -125,7 +127,7 @@ export async function getSwapInfo(data: Hex) {
 
   const toTokenAddress = getValueByPath<Hex>(swapArgs, toTokenPath)!
   const { symbol: fromTokenSymbol, decimals: fromTokenDecimals } = await getTokenInfo(fromTokenAddress)
-  const { symbol: toTokenSymbol} = await getTokenInfo(toTokenAddress)
+  const { symbol: toTokenSymbol } = await getTokenInfo(toTokenAddress)
 
   return {
     amount: Number(formatUnits(fromTokenAmount, fromTokenDecimals)),

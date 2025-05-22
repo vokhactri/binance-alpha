@@ -83,7 +83,7 @@ export async function getTransactions(address: Hex, startblock = 0, endblock = 9
     })
 
   const limit = pLimit(100)
-  const promises = transactions.map((tx) => limit(() => retry(getSwapInfo, Number.MAX_SAFE_INTEGER)(tx.input)))
+  const promises = transactions.map((tx) => limit(() => retry(getSwapInfo, 3)(tx)))
   const swapInfos = await Promise.all(promises)
 
   const fromTokens = Array.from(new Set(swapInfos.map((tx) => tx.fromTokenSymbol)))
