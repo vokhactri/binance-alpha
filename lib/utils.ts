@@ -13,7 +13,7 @@ import {
 } from 'viem'
 import { bsc } from 'viem/chains'
 import { ERC20_ABI } from '@/constants/abis'
-import { INNER_SWAP_ROUTES, SWAP_ROUTES } from '../constants/routes'
+import { SWAP_ROUTES } from '../constants/routes'
 import tokens from '@/constants/tokens'
 import dayjs from '@/lib/dayjs'
 import type { Hex } from 'viem'
@@ -103,29 +103,14 @@ export async function getSwapInfo(tx: Transaction) {
   if (!swapRoute) {
     throw new Error(`Unsupported swap route: [${methodId}](${hash}) `)
   }
-  const { amountPath, callDataPath, abi } = swapRoute
+  const { amountPath, fromTokenPath, toTokenPath, abi } = swapRoute
   const { args } = decodeFunctionData({
     abi,
     data: input,
   })
   const fromTokenAmount = getValueByPath<bigint>(args, amountPath)!
-  const callData = getValueByPath<Hex>(args, callDataPath)!
-
-  const innerSwapRoute = INNER_SWAP_ROUTES.find((route) => callData.startsWith(route.method))
-  if (!innerSwapRoute) {
-    throw new Error(`Unsupported inner swap route: [${callData.slice(0, 10)}](${hash})`)
-  }
-  const { fromTokenPath, toTokenPath, abi: innerAbi } = innerSwapRoute
-  const { args: swapArgs } = decodeFunctionData({
-    abi: innerAbi,
-    data: callData,
-  })
-  let fromTokenAddress = getValueByPath<Hex | bigint>(swapArgs, fromTokenPath)!
-  if (typeof fromTokenAddress === 'bigint') {
-    fromTokenAddress = `0x${fromTokenAddress.toString(16)}`
-  }
-
-  const toTokenAddress = getValueByPath<Hex>(swapArgs, toTokenPath)!
+  const fromTokenAddress: Hex = `0x${getValueByPath<bigint>(args, fromTokenPath)!.toString(16)}`
+  const toTokenAddress: Hex  = `0x${getValueByPath<bigint>(args, toTokenPath)!.toString(16)}`
   const { symbol: fromTokenSymbol, decimals: fromTokenDecimals } = await getTokenInfo(fromTokenAddress)
   const { symbol: toTokenSymbol } = await getTokenInfo(toTokenAddress)
 
