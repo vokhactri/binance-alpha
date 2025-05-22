@@ -18,7 +18,7 @@ export default function AddressPage({ params }: { params: Promise<{ address: Hex
   const { address } = use(params)
   const today = dayjs(getDynamicTimeRange()[0]).unix()
   const { data: blockNumber } = useBlockNumber(today)
-  const { data: transactions, isFetching, error, isError, refetch } = useFetchTransactions(address, blockNumber)
+  const { data: transactions = [], isFetching, error, isError, refetch } = useFetchTransactions(address, blockNumber)
   const tradingValue = transactions?.reduce((acc, tx) => acc + tx.amountUSD, 0)
 
   const handleSearch = (searchAddress: Hex) => {
