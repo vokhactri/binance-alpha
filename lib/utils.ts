@@ -109,8 +109,9 @@ export async function getSwapInfo(tx: Transaction) {
     data: input,
   })
   const fromTokenAmount = getValueByPath<bigint>(args, amountPath)!
-  const fromTokenAddress: Hex = `0x${getValueByPath<bigint>(args, fromTokenPath)!.toString(16)}`
-  const toTokenAddress: Hex  = `0x${getValueByPath<bigint>(args, toTokenPath)!.toString(16)}`
+  const fromTokenAddress: Hex = `0x${getValueByPath<bigint>(args, fromTokenPath)!.toString(16).padEnd(40, '0')}`
+  const toTokenAddress: Hex  = `0x${getValueByPath<bigint>(args, toTokenPath)!.toString(16).padEnd(40, '0')}`
+  console.log(fromTokenAmount, fromTokenAddress, toTokenAddress)
   const { symbol: fromTokenSymbol, decimals: fromTokenDecimals } = await getTokenInfo(fromTokenAddress)
   const { symbol: toTokenSymbol } = await getTokenInfo(toTokenAddress)
 
