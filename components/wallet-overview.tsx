@@ -42,9 +42,10 @@ export function WalletOverview({ address, tradingValue, isLoading }: WalletOverv
                 </div>
               ))}
               <div className="col-span-2 space-y-2">
-                <Skeleton className="h-6 w-full" />
                 <Skeleton className="h-4 w-full" />
-                </div>
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-2 w-full" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -68,7 +69,7 @@ export function WalletOverview({ address, tradingValue, isLoading }: WalletOverv
       className="w-full"
     >
       <Card>
-        <CardHeader className="pb-2">
+        <CardHeader>
           <CardTitle className="text-xl">Wallet Overview</CardTitle>
           <CardDescription className="flex items-center gap-2">
             <span>{formatAddress(address)}</span>
@@ -82,7 +83,7 @@ export function WalletOverview({ address, tradingValue, isLoading }: WalletOverv
               title="View on BscScan"
             >
               <Button variant="ghost" size="icon" className="h-6 w-6">
-                <ExternalLink className="h-3.5 w-3.5" />
+                <ExternalLink size={12} />
               </Button>
             </a>
           </CardDescription>
@@ -104,11 +105,14 @@ export function WalletOverview({ address, tradingValue, isLoading }: WalletOverv
                 <Milestone size={16} />
                 <p>Milestone</p>
               </div>
-              <div className="flex flex-col gap-1 -translate-y-2">
-                <span className="text-xs text-right">
-                  ${(tradingValue * 2).toFixed(2)} / ${range[1]}
-                </span>
-                <Progress value={((tradingValue * 2) / range[1]) * 100} className="h-2" />
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-left">${range[0]}</span>
+                  <span className="text-xs text-right">
+                    ${(tradingValue * 2).toFixed(2)} / ${range[1]}
+                  </span>
+                </div>
+                <Progress value={((tradingValue * 2 - range[0]) / (range[1] - range[0])) * 100} className="h-2" />
               </div>
             </div>
           </div>

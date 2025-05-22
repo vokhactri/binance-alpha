@@ -1,14 +1,10 @@
 import type { Hex } from 'viem'
 
-export type Transaction = {
-  hash: Hex
-  tokenSymbol: string
-  tokenAmount: string
-  valueUSD: string
-  timestamp: number
+export interface Transaction {
   blockNumber: string
   blockHash: Hex
   timeStamp: string
+  hash: Hex
   nonce: string
   transactionIndex: string
   from: Hex
@@ -17,9 +13,9 @@ export type Transaction = {
   gas: string
   gasPrice: string
   input: Hex
-  methodId: string
+  methodId: Hex
   functionName: string
-  contractAddress: Hex
+  contractAddress: string
   cumulativeGasUsed: string
   txreceipt_status: string
   gasUsed: string
@@ -27,7 +23,7 @@ export type Transaction = {
   isError: string
 }
 
-export type TransactionInfo = {
+export interface TransactionInfo {
   hash: Hex
   timestamp: number
   fromTokenAddress: Hex
