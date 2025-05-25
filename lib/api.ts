@@ -1,11 +1,12 @@
 import axios from 'axios'
+import { getRandomElementFromArray } from '@/lib/utils'
 import type { Hex } from 'viem'
 import type { AlphaTokenInfo, TransactionActionMap } from '@/types'
 
 const client = axios.create({
   baseURL: 'https://api.etherscan.io',
   params: {
-    apikey: process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY,
+    apikey: getRandomElementFromArray(process.env.NEXT_PUBLIC_ETHERSCAN_API_KEYS!.split(',')),
     chainId: 56,
   },
 })
@@ -62,6 +63,5 @@ export async function getTransactions<T extends keyof TransactionActionMap>({
       offset: 10000,
     },
   })
-
   return res.data.result
 }

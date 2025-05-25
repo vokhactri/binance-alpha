@@ -28,6 +28,17 @@ export function formatAddress(address: string): string {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
+export function getRandomElementFromArray<T>(array: readonly T[], count?: 1): T
+export function getRandomElementFromArray<T>(array: readonly T[], count: number): T[]
+export function getRandomElementFromArray<T>(array: readonly T[], count = 1): T | T[] {
+  if (!array.length || count > array.length) return array?.length === 1 ? array[0] : [...array]
+
+  const shuffled = [...array].sort(() => Math.random() - 0.5)
+  const result = shuffled.slice(0, Math.max(1, Math.floor(count)))
+
+  return result.length === 1 ? result[0] : result
+}
+
 export function getValueByPath<T = unknown>(data: any, path: Array<string | number>): T | undefined {
   return path.reduce((acc: any, key: string | number) => {
     if (acc === undefined || acc === null) return undefined
@@ -110,7 +121,7 @@ export async function getSwapInfo(tx: NormalTransaction) {
   })
   const fromTokenAmount = getValueByPath<bigint>(args, amountPath)!
   const fromTokenAddress: Hex = `0x${getValueByPath<bigint>(args, fromTokenPath)!.toString(16).padEnd(40, '0')}`
-  const toTokenAddress: Hex  = `0x${getValueByPath<bigint>(args, toTokenPath)!.toString(16).padEnd(40, '0')}`
+  const toTokenAddress: Hex = `0x${getValueByPath<bigint>(args, toTokenPath)!.toString(16).padEnd(40, '0')}`
   const { symbol: fromTokenSymbol, decimals: fromTokenDecimals } = await getTokenInfo(fromTokenAddress)
   const { symbol: toTokenSymbol } = await getTokenInfo(toTokenAddress)
 
