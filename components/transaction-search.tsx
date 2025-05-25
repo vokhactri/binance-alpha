@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { isAddress } from 'viem'
-import { motion } from 'motion/react'
 import { Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -16,7 +15,11 @@ interface TransactionSearchProps {
   onSearch?: (address: Hex) => void
 }
 
-export function TransactionSearch({ isLoading = false, defaultAddress = '' as Hex, onSearch }: TransactionSearchProps) {
+export default function TransactionSearch({
+  isLoading = false,
+  defaultAddress = '' as Hex,
+  onSearch,
+}: TransactionSearchProps) {
   const [address, setAddress] = useState(defaultAddress)
   const router = useRouter()
   const pathname = usePathname()
@@ -41,12 +44,7 @@ export function TransactionSearch({ isLoading = false, defaultAddress = '' as He
   }
 
   return (
-    <motion.div
-      className="flex w-full gap-2"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div className="flex gap-2">
       <Input
         type="text"
         placeholder="Enter wallet address (0x...)"
@@ -58,6 +56,6 @@ export function TransactionSearch({ isLoading = false, defaultAddress = '' as He
       <Button onClick={handleSearch} disabled={isLoading}>
         <Search className="h-4 w-4" />
       </Button>
-    </motion.div>
+    </div>
   )
 }

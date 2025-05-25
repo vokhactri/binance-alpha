@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
+import Dashboard from '@/components/layout/dashboard'
+import Footer from '@/components/layout/footer'
 import Providers from './providers'
 import '@/styles/globals.css'
 
@@ -20,7 +22,10 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-          {children}
+          <div className="container mx-auto py-8 px-4">
+            <Dashboard>{children}</Dashboard>
+            <Footer />
+          </div>
           <Toaster richColors />
         </Providers>
       </body>

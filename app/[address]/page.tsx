@@ -8,13 +8,12 @@ import dayjs from '@/lib/dayjs'
 import { getDynamicTimeRange } from '@/lib/utils'
 import { useBlockNumber } from '@/hooks/use-block'
 import { useFetchTransactions } from '@/hooks/use-transaction'
-import DashboardLayout from '@/components/dashboard-layout'
-import { WalletOverview } from '@/components/wallet-overview'
-import { TransactionsTable } from '@/components/transactions-table'
+import TransactionSearch from '@/components/transaction-search'
+import WalletOverview from '@/components/wallet-overview'
+import TransactionTable from '@/components/transaction-table'
 import { isAddressEqual, type Hex } from 'viem'
 
-
-export default function AddressPage({ params }: { params: Promise<{ address: Hex }> }) {
+export default function TransactionPage({ params }: { params: Promise<{ address: Hex }> }) {
   const { address } = use(params)
   const today = dayjs(getDynamicTimeRange()[0]).unix()
   const { data: blockNumber } = useBlockNumber(today)
@@ -32,13 +31,15 @@ export default function AddressPage({ params }: { params: Promise<{ address: Hex
   }, [address, blockNumber, refetch])
 
   return (
-    <DashboardLayout isLoading={isFetching} defaultAddress={address} onSearch={handleSearch}>
+    <>
+      <div className="w-full max-w-5xl">
+        <TransactionSearch isLoading={isFetching} defaultAddress={address} onSearch={handleSearch} />
+      </div>
       <div className="w-full max-w-5xl">
         <WalletOverview address={address} tradingValue={tradingValue!} isLoading={isFetching} />
       </div>
-
       <div className="w-full max-w-5xl">
-        <TransactionsTable transactions={transactions!} isLoading={isFetching} />
+        <TransactionTable transactions={transactions!} isLoading={isFetching} />
       </div>
 
       {isError && (
@@ -52,6 +53,6 @@ export default function AddressPage({ params }: { params: Promise<{ address: Hex
           </Alert>
         </motion.div>
       )}
-    </DashboardLayout>
+    </>
   )
 }

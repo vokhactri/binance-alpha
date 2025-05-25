@@ -14,7 +14,7 @@ interface TransactionsTableProps {
   isLoading: boolean
 }
 
-export function TransactionsTable({ transactions, isLoading }: TransactionsTableProps) {
+export default function TransactionTable({ transactions, isLoading }: TransactionsTableProps) {
   if (isLoading) {
     return (
       <div className="w-full overflow-hidden rounded-lg border">
