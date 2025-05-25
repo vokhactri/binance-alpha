@@ -13,9 +13,7 @@ export const useBlockNumber = (timestamp: number) => {
     queryKey: ['blocks', timestamp],
     queryFn: async () => {
       if (blockCache?.timestamp === timestamp) {
-        return {
-          data: blockCache.blockNumber,
-        }
+        return blockCache.blockNumber
       }
       const response = await axios.get('/api/blocks', {
         params: { timestamp },
@@ -24,9 +22,8 @@ export const useBlockNumber = (timestamp: number) => {
         timestamp,
         blockNumber: response.data,
       })
-      return response
+      return response.data
     },
     enabled: !isNaN(timestamp),
-    select: (response) => response.data,
   })
 }

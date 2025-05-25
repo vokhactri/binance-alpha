@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import type { Hex } from 'viem'
 import type { TransactionInfo } from '@/types'
 
-export const useFetchTransactions = (address: Hex, startblock = 0, endblock = 99999999) => {
+export function useFetchTransactions(address: Hex, startblock = 0, endblock = 99999999) {
   return useQuery<TransactionInfo[]>({
     queryKey: ['transactions', address, startblock, endblock],
     queryFn: async () => {
