@@ -17,7 +17,7 @@ import { SWAP_ROUTES } from '../constants/routes'
 import tokens from '@/constants/tokens'
 import dayjs from '@/lib/dayjs'
 import type { Hex } from 'viem'
-import type { Transaction } from '@/types'
+import type { NormalTransaction } from '@/types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -97,7 +97,7 @@ export async function getTokenInfo(address: Hex) {
   return { symbol, decimals }
 }
 
-export async function getSwapInfo(tx: Transaction) {
+export async function getSwapInfo(tx: NormalTransaction) {
   const { hash, methodId, input } = tx
   const swapRoute = SWAP_ROUTES.find((route) => input.startsWith(route.method))
   if (!swapRoute) {

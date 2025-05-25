@@ -1,6 +1,6 @@
 import type { Hex } from 'viem'
 
-export interface Transaction {
+export interface NormalTransaction {
   blockNumber: string
   blockHash: Hex
   timeStamp: string
@@ -23,6 +23,53 @@ export interface Transaction {
   isError: string
 }
 
+export interface InternalTransaction {
+  blockNumber: string
+  timeStamp: string
+  hash: Hex
+  from: Hex
+  to: Hex
+  value: string
+  contractAddress: Hex
+  input: Hex
+  type: string
+  gas: string
+  gasUsed: string
+  traceId: string
+  isError: string
+  errCode: string
+}
+
+export interface TokenTransaction {
+  blockNumber: string
+  timeStamp: string
+  hash: Hex
+  nonce: string
+  blockHash: Hex
+  from: Hex
+  contractAddress: Hex
+  to: Hex
+  value: string
+  tokenName: string
+  tokenSymbol: string
+  tokenDecimal: string
+  transactionIndex: string
+  gas: string
+  gasPrice: string
+  gasUsed: string
+  cumulativeGasUsed: string
+  input: Hex
+  methodId: Hex
+  functionName: string
+  confirmations: string
+}
+
+export interface TransactionActionMap {
+  txlist: NormalTransaction
+  txlistinternal: InternalTransaction
+  tokentx: TokenTransaction
+}
+
 export interface TransactionInfo {
   hash: Hex
   timestamp: number
@@ -34,7 +81,7 @@ export interface TransactionInfo {
   amountUSD: number
 }
 
-export type AlphaTokenInfo = {
+export interface AlphaTokenInfo {
   tokenId: string
   chainId: string
   chainIconUrl: string
