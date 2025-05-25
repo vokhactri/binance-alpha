@@ -8,68 +8,71 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatAddress } from '@/lib/utils'
 import dayjs from '@/lib/dayjs'
+import type { TransactionInfo } from '@/types'
 
 interface TransactionsTableProps {
-  transactions: any[]
+  transactions: TransactionInfo[]
   isLoading: boolean
 }
 
+const TransactionTableSkeleton = () => (
+  <div className="w-full overflow-hidden rounded-lg border">
+    <div className="bg-background">
+      <Table>
+        <TableHeader className="bg-muted/50">
+          <TableRow>
+            <TableHead className="w-16">#</TableHead>
+            <TableHead>Transaction Hash</TableHead>
+            <TableHead>Time</TableHead>
+            <TableHead>From Token</TableHead>
+            <TableHead>To Token</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead className="text-right">Value (USD)</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <TableRow key={index}>
+              <TableCell>
+                <Skeleton className="h-5 w-8" />
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center">
+                  <Skeleton className="h-5 w-28" />
+                </div>
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-36" />
+              </TableCell>
+              <TableCell>
+                <div className="space-y-1">
+                  <Skeleton className="h-5 w-12" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="space-y-1">
+                  <Skeleton className="h-5 w-12" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-16" />
+              </TableCell>
+              <TableCell className="text-right">
+                <Skeleton className="h-5 w-20 ml-auto" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  </div>
+)
+
 export default function TransactionTable({ transactions, isLoading }: TransactionsTableProps) {
   if (isLoading) {
-    return (
-      <div className="w-full overflow-hidden rounded-lg border">
-        <div className="bg-background">
-          <Table>
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead className="w-16">#</TableHead>
-                <TableHead>Transaction Hash</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>From Token</TableHead>
-                <TableHead>To Token</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead className="text-right">Value (USD)</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Skeleton className="h-5 w-8" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Skeleton className="h-5 w-28" />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-36" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <Skeleton className="h-5 w-12" />
-                      <Skeleton className="h-3 w-20" />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <Skeleton className="h-5 w-12" />
-                      <Skeleton className="h-3 w-20" />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-16" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-5 w-20 ml-auto" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    )
+    return <TransactionTableSkeleton />
   }
 
   return (

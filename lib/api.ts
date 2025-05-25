@@ -14,16 +14,6 @@ const client = axios.create({
   },
 })
 
-// export async function getTokenPrice(symbol: string): Promise<number> {
-//   if (symbol === 'USDT') return 1
-//   const res = await axios.get('https://api.binance.com/api/v3/ticker/price', {
-//     params: {
-//       symbol: `${symbol}USDT`,
-//     },
-//   })
-//   return Number(res.data.price)
-// }
-
 export async function getTokenPrice(symbol: string): Promise<number> {
   const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
     params: {

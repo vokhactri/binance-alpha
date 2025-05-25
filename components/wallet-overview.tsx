@@ -16,33 +16,35 @@ interface WalletOverviewProps {
   isLoading: boolean
 }
 
+const WalletOverviewSkeleton = () => (
+  <Card>
+    <CardHeader className="pb-2">
+      <Skeleton className="h-7 w-40" />
+      <Skeleton className="h-5 w-60 mt-1" />
+    </CardHeader>
+    <CardContent>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Array.from({ length: 2 }).map((_, index) => (
+          <div key={index} className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-6 w-20" />
+          </div>
+        ))}
+        <div className="col-span-2 space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-2 w-full" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+)
+
 export default function WalletOverview({ address, tradingValue, isLoading }: WalletOverviewProps) {
   const [copied, setCopied] = useState(false)
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardHeader className="pb-2">
-          <Skeleton className="h-7 w-40" />
-          <Skeleton className="h-5 w-60 mt-1" />
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Array.from({ length: 2 }).map((_, index) => (
-              <div key={index} className="space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-6 w-20" />
-              </div>
-            ))}
-            <div className="col-span-2 space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-2 w-full" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    )
+    return <WalletOverviewSkeleton />
   }
 
   const { points, range } = calculatePoints(tradingValue * 2)
