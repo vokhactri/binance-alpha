@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     })
   }
 
-  while (!rawNormalTransactions?.length && rawTokenTransactions.length) {
+  while (!rawNormalTransactions?.length && rawTokenTransactions?.length) {
     console.log('No normal transactions found, retrying with txlist...')
     rawNormalTransactions = await getTransactions({
       action: 'txlist',
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
     })
   }
 
-  while (rawNormalTransactions?.length && !rawTokenTransactions.length) {
+  while (rawNormalTransactions?.length && !rawTokenTransactions?.length) {
     console.log('No token transactions found, retrying with tokentx...')
     rawTokenTransactions = await getTransactions({
       action: 'tokentx',
