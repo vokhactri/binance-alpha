@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     }),
   ])
 
-  if (rawNormalTransactions.length === 0 || rawTokenTransactions.length === 0) {
+  if (!rawNormalTransactions?.length || !rawTokenTransactions.length) {
     return NextResponse.json({
       transactions: [],
       tokens: [],
