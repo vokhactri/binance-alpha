@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
-import { getTokenPrice, getTransactions } from '@/lib/api'
 import pLimit from 'p-limit'
+import { uniqBy } from 'lodash-es'
+import { getTokenPrice, getTransactions } from '@/lib/api'
 import { isAddressEqual, formatEther, formatUnits, zeroAddress } from 'viem'
-import { getSwapInfo, retry } from '@/lib/utils'
+import { getSwapInfo, isNativeToken, retry } from '@/lib/utils'
 import { BN_DEX_ROUTER_ADDRESS } from '@/constants'
 import alphaTokens from '@/constants/tokens'
 import type { Hex } from 'viem'
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Address is required' }, { status: 400 })
   }
 
-  const [normalTransactions, internalTransactions, tokenTransactions] = await Promise.all([
+  const [rawNormalTransactions = [], rawInternalTransactions = [], rawTokenTransactions = []] = await Promise.all([
     getTransactions({
       action: 'txlist',
       address,
@@ -38,34 +39,49 @@ export async function GET(request: Request) {
     }),
   ])
 
-  if (!Array.isArray(normalTransactions)) {
+  if (rawNormalTransactions.length === 0 || rawTokenTransactions.length === 0) {
     return NextResponse.json({
       transactions: [],
       tokens: [],
     })
   }
 
-  const rawTransactions = normalTransactions.filter(
+  const normalTransactions = rawNormalTransactions.filter(
     (tx) => isAddressEqual(tx.from, address) && isAddressEqual(tx.to, BN_DEX_ROUTER_ADDRESS)
   )
   const limit = pLimit(100)
-  const promises = rawTransactions.map((tx) => limit(() => retry(getSwapInfo, 3)(tx)))
+  const promises = normalTransactions.map((tx) => limit(() => retry(getSwapInfo, 3)(tx)))
   const swapInfos = await Promise.all(promises)
+  const uniqueTokens = uniqBy(
+    [
+      { symbol: 'BNB', address: zeroAddress, decimals: 18 },
+      ...swapInfos.flatMap((tx) => [
+        { symbol: tx.from.symbol, address: tx.from.address, decimals: tx.from.decimals },
+        { symbol: tx.to.symbol, address: tx.to.address, decimals: tx.to.decimals },
+      ]),
+    ],
+    (token) => token.address
+  )
+  const priceMap = await Promise.all(
+    uniqueTokens.map(async (token) => {
+      const price = await getTokenPrice(token.symbol)
+      return {
+        ...token,
+        price,
+      }
+    })
+  )
 
-  const uniqueTokens = [
-    ...new Set(['BNB', ...swapInfos.map((tx) => tx.from.symbol), ...swapInfos.map((tx) => tx.to.symbol)]),
-  ]
-  const prices = await Promise.all(uniqueTokens.map(getTokenPrice))
-  const priceMap = Object.fromEntries(uniqueTokens.map((token, index) => [token, prices[index]]))
-
-  const transactions = rawTransactions
+  const transactions = normalTransactions
     .map((tx, index) => ({
       hash: tx.hash,
       timestamp: Number(tx.timeStamp),
       gas: Number(formatEther(BigInt(tx.gasUsed) * BigInt(tx.gasPrice))),
       status: tx.isError === '0' ? 'success' : 'failed',
       ...swapInfos[index],
-      amountUSD: swapInfos[index].amount * priceMap[swapInfos[index].from.symbol as keyof typeof priceMap],
+      amountUSD:
+        swapInfos[index].amount *
+        priceMap.find((token) => isAddressEqual(token.address, swapInfos[index].from.address))!.price,
     }))
     .filter((tx) =>
       alphaTokens.some(
@@ -80,46 +96,37 @@ export async function GET(request: Request) {
     transactions
       .filter((tx) => tx.from.symbol === 'BNB' && tx.status === 'success')
       .reduce((sum, tx) => sum + tx.amount, 0) + totalGas
-  const rawInternalTransactions = internalTransactions.filter(
+  const internalTransactions = rawInternalTransactions.filter(
     (tx) => isAddressEqual(tx.from, BN_DEX_ROUTER_ADDRESS) && isAddressEqual(tx.to, address)
   )
-  const bnbInWei = rawInternalTransactions.reduce((sum, tx) => sum + BigInt(tx.value), 0n)
+  const bnbInWei = internalTransactions.reduce((sum, tx) => sum + BigInt(tx.value), 0n)
   const bnbIn = Number(formatEther(bnbInWei))
 
-  const tokens = Object.keys(priceMap).map((symbol) => {
-    if (symbol === 'BNB') {
+  const tokens = priceMap.map((p) => {
+    if (isNativeToken(p.address)) {
       return {
         address: zeroAddress,
         symbol: 'BNB',
         in: bnbIn,
         out: bnbOut,
-        price: priceMap[symbol],
+        price: p.price,
       }
     }
-    const selectedToken = tokenTransactions.find(
-      (token) => (token.tokenSymbol === 'BSC-USD' && symbol === 'USDT') || token.tokenSymbol === symbol
-    )!
+
+    const tokenTransactions = rawTokenTransactions.filter((token) => transactions.some((tx) => tx.hash === token.hash))
     const inAmountWei = tokenTransactions
-      .filter(
-        (token) =>
-          ((token.tokenSymbol === 'BSC-USD' && symbol === 'USDT') || token.tokenSymbol === symbol) &&
-          isAddressEqual(token.to, address)
-      )
+      .filter((token) => isAddressEqual(token.contractAddress, p.address) && isAddressEqual(token.to, address))
       .reduce((sum, token) => sum + BigInt(token.value), 0n)
     const outAmountWei = tokenTransactions
-      .filter(
-        (token) =>
-          ((token.tokenSymbol === 'BSC-USD' && symbol === 'USDT') || token.tokenSymbol === symbol) &&
-          isAddressEqual(token.from, address)
-      )
+      .filter((token) => isAddressEqual(token.contractAddress, p.address) && isAddressEqual(token.from, address))
       .reduce((sum, token) => sum + BigInt(token.value), 0n)
 
     return {
-      address: selectedToken.contractAddress,
-      symbol,
-      in: Number(formatUnits(inAmountWei, Number(selectedToken.tokenDecimal))),
-      out: Number(formatUnits(outAmountWei, Number(selectedToken.tokenDecimal))),
-      price: priceMap[symbol as keyof typeof priceMap],
+      address: p.address,
+      symbol: p.symbol,
+      in: Number(formatUnits(inAmountWei, p.decimals)),
+      out: Number(formatUnits(outAmountWei, p.decimals)),
+      price: p.price,
     }
   })
 

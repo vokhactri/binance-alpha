@@ -60,6 +60,7 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
         tx.status === 'success' && alphaTokens.some((token) => isAddressEqual(token.contractAddress, tx.to.address))
     )
     .reduce((acc, tx) => acc + tx.amountUSD, 0)
+
   const { points, range } = calculatePoints(tradingValue)
 
   const pnl = tokens.reduce((acc, token) => {
