@@ -26,12 +26,12 @@ export default function TransactionSearch({
 
   const handleSearch = () => {
     if (!address.trim()) {
-      toast.error('Please enter a wallet address!')
+      toast.error('请输入钱包地址！')
       return
     }
 
     if (!isAddress(address)) {
-      toast.error('Invalid address!')
+      toast.error('钱包地址无效！')
       return
     }
 
@@ -47,7 +47,7 @@ export default function TransactionSearch({
     <div className="flex gap-2">
       <Input
         type="text"
-        placeholder="Enter wallet address (0x...)"
+        placeholder="请输入钱包地址 (0x...)"
         value={address}
         onChange={(e) => setAddress(e.target.value as Hex)}
         className="flex-1"
