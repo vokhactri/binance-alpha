@@ -20,11 +20,11 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`}>
         <Providers>
           <div className="container mx-auto py-8 px-4">
-            <Dashboard>{children}</Dashboard>
-            <Footer />
+        <Dashboard>{children}</Dashboard>
+        <Footer />
           </div>
           <Toaster richColors />
         </Providers>

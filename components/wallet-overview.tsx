@@ -24,21 +24,27 @@ interface WalletOverviewProps {
 
 const WalletOverviewSkeleton = () => (
   <Card>
-    <CardHeader className="pb-2">
+    <CardHeader>
       <Skeleton className="h-7 w-40" />
-      <Skeleton className="h-5 w-60 mt-1" />
+      <Skeleton className="h-[25px] w-60" />
     </CardHeader>
     <CardContent>
       <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="space-y-2">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-6 w-20" />
-          </div>
-        ))}
-        <div className="col-span-3 md:col-span-2 space-y-2">
+        <div className="flex flex-col gap-1">
+          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-7 w-24" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-7 w-24" />
+        </div>
+        <div className="flex flex-col items-end md:items-start gap-1">
+          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-7 w-24" />
+        </div>
+        <div className="col-span-3 md:col-span-2 flex flex-col gap-1">
+          <Skeleton className="h-5 w-full" />
           <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-3 w-full" />
           <Skeleton className="h-2 w-full" />
         </div>
       </div>
@@ -82,14 +88,14 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
         <CardTitle className="text-xl">钱包</CardTitle>
         <CardDescription className="flex items-center gap-2">
           <span>{formatAddress(address)}</span>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={copyToClipboard} title="Copy address">
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={copyToClipboard} title="复制地址">
             {copied ? <CheckCheck className="animate-bounce" size={12} /> : <Copy size={12} />}
           </Button>
           <a
             href={`https://bscscan.com/address/${address}`}
             target="_blank"
             rel="noopener noreferrer"
-            title="View on BscScan"
+            title="在区块浏览器中查看"
           >
             <Button variant="ghost" size="icon" className="h-6 w-6">
               <ExternalLink size={12} />
@@ -99,24 +105,24 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-          <div className="space-y-1">
+          <div className="flex flex-col gap-1">
             <p className="text-sm text-muted-foreground">交易额</p>
             <p className="text-lg font-medium">${tradingValue.toFixed(2)}</p>
           </div>
-          <div className="space-y-1">
+          <div className="flex flex-col gap-1">
             <p className="text-sm text-muted-foreground flex items-center gap-1">
               积分
-              {points > 0 && <Badge className="bg-muted-foreground rounded-full">+1</Badge>}
+              {points > 0 && <Badge className="h-5 bg-muted-foreground rounded-full">+1</Badge>}
             </p>
             <p className="text-lg font-medium">{points === 0 ? 0 : points + 1}</p>
           </div>
-          <div className="space-y-1">
+          <div className="flex flex-col items-end md:items-start gap-1">
             <p className="text-sm text-muted-foreground">利润</p>
             <p className={cn('text-lg font-medium', pnl > 0 ? 'text-green-600' : pnl < 0 ? 'text-red-600' : '')}>
               ${pnl.toFixed(2)}
             </p>
           </div>
-          <div className="col-span-3 md:col-span-2 space-y-1">
+          <div className="col-span-3 md:col-span-2 flex flex-col gap-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Milestone size={16} />
               <p>里程</p>
