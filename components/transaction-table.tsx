@@ -2,9 +2,10 @@
 
 import { useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Filter, ExternalLink } from 'lucide-react'
+import { Filter, ExternalLink, Clock } from 'lucide-react'
 import { isAddressEqual } from 'viem'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Menubar,
@@ -37,6 +38,7 @@ interface TransactionSettings {
   activeTab: '0' | '1'
   filter: 'all' | 'buy' | 'sell'
   showFailed: boolean
+  timeFormat: 'relative' | 'absolute'
 }
 
 const TransactionTableSkeleton = () => {
@@ -65,7 +67,12 @@ const TransactionTableSkeleton = () => {
                 <TableRow>
                   <TableHead className="w-16">#</TableHead>
                   <TableHead>交易哈希</TableHead>
-                  <TableHead>时间</TableHead>
+                  <TableHead className="flex items-center">
+                    时间
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Clock className="h-3 w-3" />
+                    </Button>
+                  </TableHead>
                   <TableHead>源代币</TableHead>
                   <TableHead>目标代币</TableHead>
                   <TableHead>数量</TableHead>
@@ -169,6 +176,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
     activeTab: '0',
     filter: 'buy',
     showFailed: false,
+    timeFormat: 'absolute',
   })
 
   const filteredTransactions = useMemo(() => {
@@ -222,6 +230,13 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
     if (value > 0) return 'text-green-600'
     if (value < 0) return 'text-red-600'
     return 'text-muted-foreground'
+  }
+
+  const formatTime = (timestamp: number, timeFormat: TransactionSettings['timeFormat']) => {
+    if (timeFormat === 'relative') {
+      return dayjs.unix(timestamp).fromNow()
+    }
+    return dayjs.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')
   }
 
   return (
@@ -287,7 +302,22 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                 <TableRow>
                   <TableHead className="w-16">#</TableHead>
                   <TableHead>交易哈希</TableHead>
-                  <TableHead>时间</TableHead>
+                  <TableHead className="flex items-center">
+                    时间
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          timeFormat: prev.timeFormat === 'absolute' ? 'relative' : 'absolute',
+                        }))
+                      }
+                      className="h-6 w-6 p-0"
+                    >
+                      <Clock className="h-3 w-3" />
+                    </Button>
+                  </TableHead>
                   <TableHead>源代币</TableHead>
                   <TableHead>目标代币</TableHead>
                   <TableHead>数量</TableHead>
@@ -327,7 +357,18 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                             <ExternalLink className="ml-1 h-3 w-3" />
                           </a>
                         </TableCell>
-                        <TableCell>{dayjs.unix(transaction.timestamp).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
+                        <TableCell>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span>{formatTime(transaction.timestamp, settings.timeFormat)}</span>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs">
+                                <p className="font-mono text-xs">{formatTime(transaction.timestamp, 'absolute')}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
                             <span>{transaction.from.symbol}</span>
