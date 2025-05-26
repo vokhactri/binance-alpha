@@ -86,7 +86,7 @@ export async function GET(request: Request) {
   )
   const priceMap = await Promise.all(
     uniqueTokens.map(async (token) => {
-      const price = await getTokenPrice(token.symbol)
+      const price = await getTokenPrice(token)
       return {
         ...token,
         price,
