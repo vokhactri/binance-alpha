@@ -176,7 +176,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
     activeTab: '0',
     filter: 'buy',
     showFailed: false,
-    timeFormat: 'absolute',
+    timeFormat: 'relative',
   })
 
   const filteredTransactions = useMemo(() => {
