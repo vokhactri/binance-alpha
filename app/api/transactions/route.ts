@@ -18,7 +18,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Address is required' }, { status: 400 })
   }
 
-  const [rawNormalTransactions = [], rawInternalTransactions = [], rawTokenTransactions = []] = await Promise.all([
+  // eslint-disable-next-line prefer-const
+  let [rawNormalTransactions = [], rawInternalTransactions = [], rawTokenTransactions = []] = await Promise.all([
     getTransactions({
       action: 'txlist',
       address,
@@ -39,10 +40,31 @@ export async function GET(request: Request) {
     }),
   ])
 
-  if (!rawNormalTransactions?.length || !rawTokenTransactions.length) {
+  if (!rawNormalTransactions?.length && !rawTokenTransactions?.length) {
+    console.log('No transactions found for address:', address)
     return NextResponse.json({
       transactions: [],
       tokens: [],
+    })
+  }
+
+  while (!rawNormalTransactions?.length && rawTokenTransactions.length) {
+    console.log('No normal transactions found, retrying with txlist...')
+    rawNormalTransactions = await getTransactions({
+      action: 'txlist',
+      address,
+      startblock,
+      endblock,
+    })
+  }
+
+  while (rawNormalTransactions?.length && !rawTokenTransactions.length) {
+    console.log('No token transactions found, retrying with tokentx...')
+    rawTokenTransactions = await getTransactions({
+      action: 'tokentx',
+      address,
+      startblock,
+      endblock,
     })
   }
 

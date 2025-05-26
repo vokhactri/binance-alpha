@@ -104,8 +104,8 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-          <div className="flex flex-col gap-1">
+        <div className="grid grid-cols-4 md:grid-cols-5 gap-4">
+          <div className="flex flex-col gap-1 col-span-2 md:col-span-1">
             <p className="text-sm text-muted-foreground">交易额</p>
             <p className="text-lg font-medium">${tradingValue.toFixed(2)}</p>
           </div>
@@ -122,7 +122,7 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
               ${pnl.toFixed(2)}
             </p>
           </div>
-          <div className="col-span-3 md:col-span-2 flex flex-col gap-1">
+          <div className="col-span-4 md:col-span-2 flex flex-col gap-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Milestone size={16} />
               <p>里程</p>
