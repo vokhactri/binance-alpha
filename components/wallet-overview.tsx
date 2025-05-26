@@ -36,7 +36,7 @@ const WalletOverviewSkeleton = () => (
             <Skeleton className="h-6 w-20" />
           </div>
         ))}
-        <div className="col-span-2 space-y-2">
+        <div className="col-span-3 md:col-span-2 space-y-2">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-3 w-full" />
           <Skeleton className="h-2 w-full" />
@@ -115,7 +115,7 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
               ${pnl.toFixed(2)}
             </p>
           </div>
-          <div className="col-span-2 space-y-1">
+          <div className="col-span-3 md:col-span-2 space-y-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Milestone size={16} />
               <p>里程</p>
