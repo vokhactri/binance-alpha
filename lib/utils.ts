@@ -1,5 +1,5 @@
 import c from 'picocolors'
-import { clsx, type ClassValue } from 'clsx'
+import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import {
   decodeFunctionData,
@@ -14,9 +14,11 @@ import {
 import { bsc } from 'viem/chains'
 import { ERC20_ABI } from '@/constants/abis'
 import { SWAP_ROUTES } from '../constants/routes'
-import tokens from '@/constants/tokens'
+import { USDC_ADDRESS, USDT_ADDRESS } from '@/constants'
+import alphaTokens from '@/constants/tokens'
 import dayjs from '@/lib/dayjs'
 import type { Hex } from 'viem'
+import type { ClassValue } from 'clsx'
 import type { NormalTransaction } from '@/types'
 
 export function cn(...inputs: ClassValue[]) {
@@ -69,29 +71,30 @@ export function getDynamicTimeRange() {
   ]
 }
 
+export function isNativeToken(address: Hex) {
+  return isAddressEqual(address, ethAddress) || isAddressEqual(address, zeroAddress)
+}
+
 export async function getTokenInfo(address: Hex) {
-  if (isAddressEqual(address, ethAddress) || isAddressEqual(address, zeroAddress)) {
+  if (isNativeToken(address)) {
     return {
-      name: 'BNB',
       symbol: 'BNB',
       decimals: 18,
     }
   }
-  if (isAddressEqual(address, '0x55d398326f99059fF775485246999027B3197955')) {
+  if (isAddressEqual(address, USDT_ADDRESS)) {
     return {
-      name: 'Tether USD',
       symbol: 'USDT',
       decimals: 18,
     }
   }
-  if (isAddressEqual(address, '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d')) {
+  if (isAddressEqual(address, USDC_ADDRESS)) {
     return {
-      name: 'USD Coin',
       symbol: 'USDC',
       decimals: 18,
     }
   }
-  const token = tokens.find((token) => isAddressEqual(token.contractAddress, address))
+  const token = alphaTokens.find((token) => isAddressEqual(token.contractAddress, address))
   if (token) {
     return {
       symbol: token.symbol,
@@ -123,14 +126,20 @@ export async function getSwapInfo(tx: NormalTransaction) {
   const fromTokenAddress: Hex = `0x${getValueByPath<bigint>(args, fromTokenPath)!.toString(16).padEnd(40, '0')}`
   const toTokenAddress: Hex = `0x${getValueByPath<bigint>(args, toTokenPath)!.toString(16).padEnd(40, '0')}`
   const { symbol: fromTokenSymbol, decimals: fromTokenDecimals } = await getTokenInfo(fromTokenAddress)
-  const { symbol: toTokenSymbol } = await getTokenInfo(toTokenAddress)
+  const { symbol: toTokenSymbol, decimals: toTokenDecimal } = await getTokenInfo(toTokenAddress)
 
   return {
     amount: Number(formatUnits(fromTokenAmount, fromTokenDecimals)),
-    fromTokenAddress,
-    fromTokenSymbol,
-    toTokenAddress,
-    toTokenSymbol,
+    from: {
+      address: fromTokenAddress,
+      symbol: fromTokenSymbol,
+      decimals: fromTokenDecimals,
+    },
+    to: {
+      address: toTokenAddress,
+      symbol: toTokenSymbol,
+      decimals: toTokenDecimal,
+    },
   }
 }
 

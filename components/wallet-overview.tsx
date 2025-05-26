@@ -1,18 +1,24 @@
 'use client'
 
 import { useState } from 'react'
+import { isAddressEqual } from 'viem'
 import { Copy, ExternalLink, CheckCheck, Milestone } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatAddress, calculatePoints } from '@/lib/utils'
+import { formatAddress, calculatePoints, cn } from '@/lib/utils'
+import alphaTokens from '@/constants/tokens'
 import type { Hex } from 'viem'
+import type { TransactionInfo, TokenInfo } from '@/types'
 
 interface WalletOverviewProps {
-  address: Hex
-  tradingValue: number
+  data: {
+    address: Hex
+    transactions: TransactionInfo[]
+    tokens: TokenInfo[]
+  }
   isLoading: boolean
 }
 
@@ -23,8 +29,8 @@ const WalletOverviewSkeleton = () => (
       <Skeleton className="h-5 w-60 mt-1" />
     </CardHeader>
     <CardContent>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {Array.from({ length: 2 }).map((_, index) => (
+      <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+        {Array.from({ length: 3 }).map((_, index) => (
           <div key={index} className="space-y-2">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-6 w-20" />
@@ -40,14 +46,28 @@ const WalletOverviewSkeleton = () => (
   </Card>
 )
 
-export default function WalletOverview({ address, tradingValue, isLoading }: WalletOverviewProps) {
+export default function WalletOverview({ data, isLoading }: WalletOverviewProps) {
+  const { address, transactions, tokens } = data
   const [copied, setCopied] = useState(false)
 
   if (isLoading) {
     return <WalletOverviewSkeleton />
   }
 
-  const { points, range } = calculatePoints(tradingValue * 2)
+  const tradingValue = transactions
+    ?.filter(
+      (tx) =>
+        tx.status === 'success' && alphaTokens.some((token) => isAddressEqual(token.contractAddress, tx.to.address))
+    )
+    .reduce((acc, tx) => acc + tx.amountUSD, 0)
+  const { points, range } = calculatePoints(tradingValue)
+
+  const pnl = tokens.reduce((acc, token) => {
+    const netFlow = token.in - token.out
+    if (netFlow === 0) return acc
+    const profit = netFlow * token.price
+    return acc + profit
+  }, 0)
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(address)
@@ -58,7 +78,7 @@ export default function WalletOverview({ address, tradingValue, isLoading }: Wal
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">Wallet Overview</CardTitle>
+        <CardTitle className="text-xl">钱包</CardTitle>
         <CardDescription className="flex items-center gap-2">
           <span>{formatAddress(address)}</span>
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={copyToClipboard} title="Copy address">
@@ -77,30 +97,37 @@ export default function WalletOverview({ address, tradingValue, isLoading }: Wal
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">
-              Trading Value <Badge className="bg-muted-foreground">2x</Badge>
-            </p>
-            <p className="text-lg font-medium">${(tradingValue * 2).toFixed(2)}</p>
+            <p className="text-sm text-muted-foreground">交易额</p>
+            <p className="text-lg font-medium">${tradingValue.toFixed(2)}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Points</p>
-            <p className="text-lg font-medium">{points}</p>
+            <p className="text-sm text-muted-foreground flex items-center gap-1">
+              积分
+              {points > 0 && <Badge className="bg-muted-foreground rounded-full">+1</Badge>}
+            </p>
+            <p className="text-lg font-medium">{points === 0 ? 0 : points + 1}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm text-muted-foreground">利润</p>
+            <p className={cn('text-lg font-medium', pnl > 0 ? 'text-green-600' : pnl < 0 ? 'text-red-600' : '')}>
+              ${pnl.toFixed(2)}
+            </p>
           </div>
           <div className="col-span-2 space-y-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Milestone size={16} />
-              <p>Milestone</p>
+              <p>里程</p>
             </div>
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-left">${range[0]}</span>
                 <span className="text-xs text-right">
-                  ${(tradingValue * 2).toFixed(2)} / ${range[1]}
+                  ${tradingValue.toFixed(2)} / ${range[1]}
                 </span>
               </div>
-              <Progress value={((tradingValue * 2 - range[0]) / (range[1] - range[0])) * 100} className="h-2" />
+              <Progress value={((tradingValue - range[0]) / (range[1] - range[0])) * 100} className="h-2" />
             </div>
           </div>
         </div>

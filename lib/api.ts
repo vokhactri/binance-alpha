@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { apiKeys } from '@/configs'
 import { getRandomElementFromArray } from '@/lib/utils'
 import type { Hex } from 'viem'
 import type { AlphaTokenInfo, TransactionActionMap } from '@/types'
@@ -6,10 +7,31 @@ import type { AlphaTokenInfo, TransactionActionMap } from '@/types'
 const client = axios.create({
   baseURL: 'https://api.etherscan.io',
   params: {
-    apikey: getRandomElementFromArray(process.env.NEXT_PUBLIC_ETHERSCAN_API_KEYS!.split(',')),
+    // apikey: process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY,
     chainId: 56,
   },
 })
+
+client.interceptors.request.use(
+  (config) => {
+    if (config.params) {
+      if (config.params.action === 'txlist') {
+        config.params.apikey = getRandomElementFromArray(apiKeys.txlist)
+      } else if (config.params.action === 'txlistinternal') {
+        config.params.apikey = getRandomElementFromArray(apiKeys.txlistinternal)
+      } else if (config.params.action === 'tokentx') {
+        config.params.apikey = getRandomElementFromArray(apiKeys.tokentx)
+      } else {
+        config.params.apikey = getRandomElementFromArray(apiKeys.default)
+      }
+    }
+    return config
+  },
+  (error) => {
+    console.error('Request error:', error)
+    return Promise.reject(error)
+  }
+)
 
 export async function getTokenPrice(symbol: string): Promise<number> {
   const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
