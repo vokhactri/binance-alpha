@@ -14,7 +14,7 @@ import {
 import { bsc } from 'viem/chains'
 import { ERC20_ABI } from '@/constants/abis'
 import { SWAP_ROUTES } from '../constants/routes'
-import { USDC_ADDRESS, USDT_ADDRESS } from '@/constants'
+import { USDC_ADDRESS, USDT_ADDRESS, WBNB_ADDRESS } from '@/constants'
 import alphaTokens from '@/constants/tokens'
 import dayjs from '@/lib/dayjs'
 import type { Hex } from 'viem'
@@ -91,6 +91,12 @@ export async function getTokenInfo(address: Hex) {
   if (isAddressEqual(address, USDC_ADDRESS)) {
     return {
       symbol: 'USDC',
+      decimals: 18,
+    }
+  }
+  if (isAddressEqual(address, WBNB_ADDRESS)) {
+    return {
+      symbol: 'WBNB',
       decimals: 18,
     }
   }

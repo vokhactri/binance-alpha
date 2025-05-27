@@ -36,7 +36,7 @@ client.interceptors.request.use(
 export async function getTokenPrice({ symbol, address }: { symbol: string; address?: Hex }): Promise<number> {
   const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
     params: {
-      fsym: symbol,
+      fsym: symbol === 'WBNB' ? 'BNB' : symbol,
       tsyms: 'USD',
     },
   })
