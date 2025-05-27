@@ -34,19 +34,23 @@ client.interceptors.request.use(
 )
 
 export async function getTokenPrice({ symbol, address }: { symbol: string; address?: Hex }): Promise<number> {
-  const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
-    params: {
-      fsym: symbol,
-      tsyms: 'USD',
-    },
-  })
-  if (res.data.USD !== undefined) return res.data.USD
+  try {
+    const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
+      params: {
+        fsym: symbol,
+        tsyms: 'USD',
+      },
+    })
+    if (res.data.USD !== undefined) return res.data.USD
 
-  const fallbackRes = await axios.post('https://web3.bitget.com/api/home/marketApi/quotev2/coinInfo', {
-    chain: 'bnb',
-    contract: address,
-  })
-  return Number(fallbackRes.data.data.price)
+    const fallbackRes = await axios.post('https://web3.bitget.com/api/home/marketApi/quotev2/coinInfo', {
+      chain: 'bnb',
+      contract: address,
+    })
+    return Number(fallbackRes.data.data.price)
+  } catch {
+    return 0
+  }
 }
 
 export async function getBlockNumberByTimestamp(timestamp: number) {
