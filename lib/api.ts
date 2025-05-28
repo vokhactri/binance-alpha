@@ -63,7 +63,7 @@ export async function getBlockNumberByTimestamp(timestamp: number) {
   return isNaN(blockNumber) ? 99999999 : blockNumber
 }
 
-export async function getAlphaTokens() {
+export async function getAlphaTokens(): Promise<AlphaTokenInfo[]> {
   const res = await axios.get(
     'https://www.binance.com/bapi/defi/v1/public/wallet-direct/buw/wallet/cex/alpha/all/token/list'
   )

@@ -1,37 +1,37 @@
 import type { Hex } from 'viem'
 
 export interface AlphaTokenInfo {
-  tokenId: string
   chainId: string
-  chainIconUrl: string
-  chainName: string
   contractAddress: Hex
   name: string
   symbol: string
-  iconUrl: string
-  price: string
-  percentChange24h: string
-  volume24h: string
-  marketCap: string
-  fdv: string
-  liquidity: string
-  totalSupply: string
-  circulatingSupply: string
-  holders: string
   decimals: number
-  listingCex: boolean
-  hotTag: boolean
-  cexCoinName: string
-  canTransfer: boolean
-  denomination: number
-  offline: boolean
-  tradeDecimal: number
-  alphaId: string
-  offsell: boolean
-  priceHigh24h: string
-  priceLow24h: string
-  onlineTge: boolean
-  onlineAirdrop: boolean
+  // tokenId: string
+  // chainIconUrl: string
+  // chainName: string
+  // iconUrl: string
+  // price: string
+  // percentChange24h: string
+  // volume24h: string
+  // marketCap: string
+  // fdv: string
+  // liquidity: string
+  // totalSupply: string
+  // circulatingSupply: string
+  // holders: string
+  // listingCex: boolean
+  // hotTag: boolean
+  // cexCoinName: string
+  // canTransfer: boolean
+  // denomination: number
+  // offline: boolean
+  // tradeDecimal: number
+  // alphaId: string
+  // offsell: boolean
+  // priceHigh24h: string
+  // priceLow24h: string
+  // onlineTge: boolean
+  // onlineAirdrop: boolean
 }
 
 export interface NormalTransaction {
