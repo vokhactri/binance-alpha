@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { apiKeys } from '@/configs'
 import { getRandomElementFromArray } from '@/lib/utils'
+import { WBNB_ADDRESS } from '@/constants'
 import type { Hex } from 'viem'
 import type { AlphaTokenInfo, TransactionActionMap } from '@/types'
 
@@ -44,7 +45,7 @@ export async function getTokenPrice({ symbol, address }: { symbol: string; addre
 
   const fallbackRes = await axios.post('https://web3.bitget.com/api/home/marketApi/quotev2/coinInfo', {
     chain: 'bnb',
-    contract: address,
+    contract: symbol === 'BNB' ? WBNB_ADDRESS : address,
   })
   return Number(fallbackRes.data.data.price)
 }
