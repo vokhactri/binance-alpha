@@ -67,7 +67,7 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
     )
     .reduce((acc, tx) => acc + tx.amountUSD, 0)
 
-  const { points, range } = calculatePoints(tradingValue)
+  const { points, range } = calculatePoints(tradingValue * 2)
 
   const pnl = tokens.reduce((acc, token) => {
     const netFlow = token.in - token.out
@@ -106,15 +106,14 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
       <CardContent>
         <div className="grid grid-cols-4 md:grid-cols-5 gap-4">
           <div className="flex flex-col gap-1 col-span-2 md:col-span-1">
-            <p className="text-sm text-muted-foreground">交易额</p>
-            <p className="text-lg font-medium">${tradingValue.toFixed(2)}</p>
+            <p className="text-sm text-muted-foreground flex items-center gap-1">
+              交易额<Badge className="h-5 rounded-full bg-muted-foreground">2x</Badge>
+            </p>
+            <p className="text-lg font-medium">${(tradingValue * 2).toFixed(2)}</p>
           </div>
           <div className="flex flex-col gap-1">
-            <p className="text-sm text-muted-foreground flex items-center gap-1">
-              积分
-              {points > 0 && <Badge className="h-5 bg-muted-foreground rounded-full">+1</Badge>}
-            </p>
-            <p className="text-lg font-medium">{points === 0 ? 0 : points + 1}</p>
+            <p className="text-sm text-muted-foreground">积分</p>
+            <p className="text-lg font-medium">{points}</p>
           </div>
           <div className="flex flex-col items-end md:items-start gap-1">
             <p className="text-sm text-muted-foreground">利润</p>
@@ -131,10 +130,10 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
               <div className="flex items-center justify-between">
                 <span className="text-xs text-left">${range[0]}</span>
                 <span className="text-xs text-right">
-                  ${tradingValue.toFixed(2)} / ${range[1]}
+                  ${(tradingValue * 2).toFixed(2)} / ${range[1]}
                 </span>
               </div>
-              <Progress value={((tradingValue - range[0]) / (range[1] - range[0])) * 100} className="h-2" />
+              <Progress value={((tradingValue * 2 - range[0]) / (range[1] - range[0])) * 100} className="h-2" />
             </div>
           </div>
         </div>
