@@ -46,6 +46,8 @@ export default function TransactionSearch({
   return (
     <div className="flex gap-2">
       <Input
+        name="wallet-address"
+        id="wallet-address-input"
         type="text"
         placeholder="请输入钱包地址 (0x...)"
         value={address}
