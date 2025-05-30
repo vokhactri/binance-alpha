@@ -99,7 +99,7 @@ export async function GET(request: Request) {
       hash: tx.hash,
       timestamp: Number(tx.timeStamp),
       gas: Number(formatEther(BigInt(tx.gasUsed) * BigInt(tx.gasPrice))),
-      status: tx.isError === '0' ? 'success' : 'failed',
+      status: tx.isError === '0' && tx.txreceipt_status === '1' ? 'success' : 'failed',
       ...swapInfos[index],
       amountUSD:
         swapInfos[index].amount *
