@@ -62,12 +62,12 @@ export function getPublicClient() {
 }
 
 export function getDynamicTimeRange() {
-  const now = dayjs()
+  const now = dayjs.tz(undefined, 'Asia/Shanghai')
   const isBefore8AM = now.hour() < 8
   const baseDay = isBefore8AM ? now.subtract(1, 'day') : now
   return [
-    baseDay.set('hour', 8).startOf('hour').format('YYYY-MM-DD HH:mm:ss'),
-    baseDay.add(1, 'day').set('hour', 7).endOf('hour').format('YYYY-MM-DD HH:mm:ss'),
+    baseDay.set('hour', 8).startOf('hour'),
+    baseDay.add(1, 'day').set('hour', 7).endOf('hour'),
   ]
 }
 
