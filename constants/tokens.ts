@@ -3,6 +3,13 @@ import type { AlphaTokenInfo } from '@/types'
 const tokens: AlphaTokenInfo[] = [
   {
     chainId: '56',
+    contractAddress: '0x30c60b20c25b2810ca524810467a0c342294fc61',
+    name: `Taiko Token`,
+    symbol: 'TAIKO',
+    decimals: 18,
+  },
+  {
+    chainId: '56',
     contractAddress: '0xf7626c7ff7b778aaf187d508d056a9398d9545d1',
     name: `Assisterr AI`,
     symbol: 'ASRR',
