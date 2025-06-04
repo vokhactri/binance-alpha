@@ -41,13 +41,14 @@ export async function getTokenPrice({ symbol, address }: { symbol: string; addre
       tsyms: 'USD',
     },
   })
-  if (res.data.USD !== undefined) return res.data.USD
+  // if (res.data.USD !== undefined) return res.data.USD
 
-  const fallbackRes = await axios.post('https://web3.bitget.com/api/home/marketApi/quotev2/coinInfo', {
-    chain: 'bnb',
-    contract: symbol === 'BNB' ? WBNB_ADDRESS : address,
-  })
-  return Number(fallbackRes.data.data.price)
+  // const fallbackRes = await axios.post('https://web3.bitget.com/api/home/marketApi/quotev2/coinInfo', {
+  //   chain: 'bnb',
+  //   contract: symbol === 'BNB' ? WBNB_ADDRESS : address,
+  // })
+  // return Number(fallbackRes.data.data.price)
+  return res.data.USD
 }
 
 export async function getBlockNumberByTimestamp(timestamp: number) {
