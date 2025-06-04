@@ -3,6 +3,20 @@ import type { AlphaTokenInfo } from '@/types'
 const tokens: AlphaTokenInfo[] = [
   {
     chainId: '56',
+    contractAddress: '0x74da4c5f8c254dd4fb39f9804c0924f52a808318',
+    name: `Caila`,
+    symbol: 'CA',
+    decimals: 18,
+  },
+  {
+    chainId: '56',
+    contractAddress: '0x389ad4bb96d0d6ee5b6ef0efaf4b7db0ba2e02a0',
+    name: `Lagrange`,
+    symbol: 'LA',
+    decimals: 18,
+  },
+  {
+    chainId: '56',
     contractAddress: '0x1036b2379f506761f237fba7463857924ef21ce3',
     name: `Bondex Token`,
     symbol: 'BDXN',
