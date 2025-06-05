@@ -35,12 +35,21 @@ client.interceptors.request.use(
 )
 
 export async function getTokenPrice({ symbol, address }: { symbol: string; address?: Hex }): Promise<number> {
+  if (symbol === 'KOGE') {
+    const res = await axios.get(
+      'https://dncapi.flink1.com/api/v3/events?timestamp=0&type=0&filter=999&per_page=50&coincode=koge&webp=1'
+    )
+    return res.data.data.list[0]?.price
+  }
   const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
     params: {
       fsym: symbol === 'WBNB' ? 'BNB' : symbol,
       tsyms: 'USD',
     },
   })
+  if (res.data?.Message?.includes('does not exist for this coin pair')) {
+    // TODO
+  }
   // if (res.data.USD !== undefined) return res.data.USD
 
   // const fallbackRes = await axios.post('https://web3.bitget.com/api/home/marketApi/quotev2/coinInfo', {
