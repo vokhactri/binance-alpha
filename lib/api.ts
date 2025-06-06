@@ -34,30 +34,86 @@ client.interceptors.request.use(
   }
 )
 
-export async function getTokenPrice({ symbol, address }: { symbol: string; address?: Hex }): Promise<number> {
-  if (symbol === 'KOGE') {
-    const res = await axios.get(
-      'https://dncapi.flink1.com/api/v3/events?timestamp=0&type=0&filter=999&per_page=50&coincode=koge&webp=1'
-    )
-    return res.data.data.list[0]?.price
-  }
-  const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
-    params: {
-      fsym: symbol === 'WBNB' ? 'BNB' : symbol,
-      tsyms: 'USD',
-    },
-  })
-  if (res.data?.Message?.includes('does not exist for this coin pair')) {
-    // TODO
-  }
-  // if (res.data.USD !== undefined) return res.data.USD
+// export async function getTokenPrice({ symbol, address }: { symbol: string; address?: Hex }): Promise<number> {
+//   if (symbol === 'KOGE') {
+//     const res = await axios.get(
+//       'https://dncapi.flink1.com/api/v3/events?timestamp=0&type=0&filter=999&per_page=50&coincode=koge&webp=1'
+//     )
+//     return res.data.data.list[0]?.price
+//   }
+//   const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
+//     params: {
+//       fsym: symbol === 'WBNB' ? 'BNB' : symbol,
+//       tsyms: 'USD',
+//     },
+//   })
+//   if (res.data?.Message?.includes('does not exist for this coin pair')) {
+//     // TODO
+//   }
+//   // if (res.data.USD !== undefined) return res.data.USD
 
-  // const fallbackRes = await axios.post('https://web3.bitget.com/api/home/marketApi/quotev2/coinInfo', {
-  //   chain: 'bnb',
-  //   contract: symbol === 'BNB' ? WBNB_ADDRESS : address,
-  // })
-  // return Number(fallbackRes.data.data.price)
+//   // const fallbackRes = await axios.post('https://web3.bitget.com/api/home/marketApi/quotev2/coinInfo', {
+//   //   chain: 'bnb',
+//   //   contract: symbol === 'BNB' ? WBNB_ADDRESS : address,
+//   // })
+//   // return Number(fallbackRes.data.data.price)
+//   return res.data.USD
+// }
+
+async function fetchTokenPriceFromCryptoCompare(symbol: string): Promise<number> {
+  const resolvedSymbol = symbol === 'WBNB' ? 'BNB' : symbol
+  const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
+    params: { fsym: resolvedSymbol, tsyms: 'USD' },
+  })
+
+  if (res.data?.Message?.includes('does not exist')) {
+    throw new Error(`CryptoCompare doesn't support ${resolvedSymbol}`)
+  }
+
   return res.data.USD
+}
+
+async function fetchTokenPriceFromGeckoTerminal(address: string): Promise<number> {
+  const res = await axios.get(`https://api.geckoterminal.com/api/v2/simple/networks/bsc/token_price/${address}`)
+
+  const price = res.data?.data?.attributes?.token_prices?.[address]
+  if (price === undefined) {
+    throw new Error(`GeckoTerminal price not found for ${address}`)
+  }
+
+  return Number(price)
+}
+
+async function fetchTokenPriceFromDexScreener(address: string): Promise<number> {
+  const res = await axios.get(`https://api.dexscreener.com/latest/dex/tokens/${address}`)
+
+  const price = res.data.pairs?.[0]?.priceUsd
+  if (!price) {
+    throw new Error(`DexScreener price not found for ${address}`)
+  }
+
+  return Number(price)
+}
+
+export async function getTokenPrice({ symbol, address }: { symbol: string; address: Hex }): Promise<number> {
+  const formattedAddress = address.toLowerCase()
+
+  const priceFetchStrategies = [
+    () => fetchTokenPriceFromCryptoCompare(symbol),
+    () => fetchTokenPriceFromGeckoTerminal(formattedAddress),
+    () => fetchTokenPriceFromDexScreener(formattedAddress),
+  ]
+
+  for (const strategy of priceFetchStrategies) {
+    try {
+      const price = await strategy()
+      if (price !== undefined) return price
+    } catch (e: any) {
+      console.warn(`Price fetch failed: ${e.message}`)
+    }
+  }
+
+  throw new Error('All token price fetching strategies failed')
 }
 
 export async function getBlockNumberByTimestamp(timestamp: number) {
