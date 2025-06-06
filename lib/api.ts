@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { apiKeys } from '@/configs'
 import { getRandomElementFromArray } from '@/lib/utils'
+import { WBNB_ADDRESS } from '@/constants'
+import { zeroAddress } from 'viem'
 import type { Hex } from 'viem'
 import type { AlphaTokenInfo, TransactionActionMap } from '@/types'
 
@@ -38,43 +40,37 @@ async function fetchTokenPriceFromCryptoCompare(symbol: string): Promise<number>
   const res = await axios.get('https://min-api.cryptocompare.com/data/price', {
     params: { fsym: resolvedSymbol, tsyms: 'USD' },
   })
-
   if (res.data?.Message?.includes('does not exist')) {
     throw new Error(`CryptoCompare doesn't support ${resolvedSymbol}`)
   }
-
   return res.data.USD
 }
 
-async function fetchTokenPriceFromGeckoTerminal(address: string): Promise<number> {
-  const res = await axios.get(`https://api.geckoterminal.com/api/v2/simple/networks/bsc/token_price/${address}`)
-
-  const price = res.data?.data?.attributes?.token_prices?.[address]
+async function fetchTokenPriceFromGeckoTerminal(symbol: string, address: Hex): Promise<number> {
+  const resolvedAddress = ['BNB', 'WBNB'].includes(symbol) ? zeroAddress : address.toLowerCase()
+  const res = await axios.get(`https://api.geckoterminal.com/api/v2/simple/networks/bsc/token_price/${resolvedAddress}`)
+  const price = res.data?.data?.attributes?.token_prices?.[resolvedAddress]
   if (price === undefined) {
     throw new Error(`GeckoTerminal price not found for ${address}`)
   }
-
   return Number(price)
 }
 
-async function fetchTokenPriceFromDexScreener(address: string): Promise<number> {
-  const res = await axios.get(`https://api.dexscreener.com/latest/dex/tokens/${address}`)
-
-  const price = res.data.pairs?.[0]?.priceUsd
+async function fetchTokenPriceFromDexScreener(symbol: string, address: Hex): Promise<number> {
+  const resolvedAddress = symbol === 'BNB' ? WBNB_ADDRESS.toLowerCase() : address.toLowerCase()
+  const res = await axios.get(`https://api.dexscreener.com/latest/dex/tokens/${resolvedAddress}`)
+  const price = res.data.pairs.filter((pair: any) => pair.chainId === 'bsc')?.[0]?.priceUsd
   if (!price) {
     throw new Error(`DexScreener price not found for ${address}`)
   }
-
   return Number(price)
 }
 
 export async function getTokenPrice({ symbol, address }: { symbol: string; address: Hex }): Promise<number> {
-  const formattedAddress = address.toLowerCase()
-
   const priceFetchStrategies = [
     () => fetchTokenPriceFromCryptoCompare(symbol),
-    () => fetchTokenPriceFromGeckoTerminal(formattedAddress),
-    () => fetchTokenPriceFromDexScreener(formattedAddress),
+    () => fetchTokenPriceFromGeckoTerminal(symbol, address),
+    () => fetchTokenPriceFromDexScreener(symbol, address),
   ]
 
   for (const strategy of priceFetchStrategies) {
