@@ -67,6 +67,8 @@ async function fetchTokenPriceFromDexScreener(symbol: string, address: Hex): Pro
 }
 
 export async function getTokenPrice({ symbol, address }: { symbol: string; address: Hex }): Promise<number> {
+  if (symbol === 'USDT') return 1
+
   const priceFetchStrategies = [
     () => fetchTokenPriceFromCryptoCompare(symbol),
     () => fetchTokenPriceFromGeckoTerminal(symbol, address),
@@ -123,8 +125,7 @@ export async function getTransactions<T extends keyof TransactionActionMap>({
       address,
       startblock,
       endblock,
-      page: 1,
-      offset: 10000,
+      sort: 'desc',
     },
   })
   return res.data.result

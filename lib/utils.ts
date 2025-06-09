@@ -135,16 +135,17 @@ export async function getSwapInfo(tx: NormalTransaction) {
   const { symbol: toTokenSymbol, decimals: toTokenDecimal } = await getTokenInfo(toTokenAddress)
 
   return {
-    amount: Number(formatUnits(fromTokenAmount, fromTokenDecimals)),
     from: {
       address: fromTokenAddress,
       symbol: fromTokenSymbol,
       decimals: fromTokenDecimals,
+      amount: Number(formatUnits(fromTokenAmount, fromTokenDecimals)),
     },
     to: {
       address: toTokenAddress,
       symbol: toTokenSymbol,
       decimals: toTokenDecimal,
+      amount: 0
     },
   }
 }

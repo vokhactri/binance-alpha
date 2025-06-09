@@ -111,14 +111,16 @@ export interface TransactionInfo {
     address: Hex
     symbol: string
     decimals: number
+    amount: number
+    price: number
   }
   to: {
     address: Hex
     symbol: string
     decimals: number
+    amount: number
+    price: number
   }
-  amount: number
-  amountUSD: number
   gas: number
   status: 'success' | 'failed'
 }
@@ -126,6 +128,7 @@ export interface TransactionInfo {
 export interface TokenInfo {
   address: Hex
   symbol: string
+  decimals: number
   in: number
   out: number
   price: number

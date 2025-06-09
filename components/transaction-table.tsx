@@ -75,7 +75,6 @@ const TransactionTableSkeleton = () => {
                   </TableHead>
                   <TableHead>源代币</TableHead>
                   <TableHead>目标代币</TableHead>
-                  <TableHead>数量</TableHead>
                   <TableHead className="text-right">手续费</TableHead>
                 </TableRow>
               </TableHeader>
@@ -96,17 +95,14 @@ const TransactionTableSkeleton = () => {
                     <TableCell>
                       <div className="space-y-1">
                         <Skeleton className="h-5 w-12" />
-                        <Skeleton className="h-3 w-20" />
+                        <Skeleton className="h-5 w-20" />
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
                         <Skeleton className="h-5 w-12" />
-                        <Skeleton className="h-3 w-20" />
+                        <Skeleton className="h-5 w-20" />
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-16" />
                     </TableCell>
                     <TableCell className="text-right">
                       <Skeleton className="h-5 w-20 ml-auto" />
@@ -320,7 +316,6 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                   </TableHead>
                   <TableHead>源代币</TableHead>
                   <TableHead>目标代币</TableHead>
-                  <TableHead>数量</TableHead>
                   <TableHead className="text-right">手续费</TableHead>
                 </TableRow>
               </TableHeader>
@@ -371,13 +366,16 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span>{transaction.from.symbol}</span>
+                            <span className="text-green-600">{transaction.from.amount}</span>
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className="text-xs text-muted-foreground">
-                                    {formatAddress(transaction.from.address)}
-                                  </span>
+                                  <div className="flex items-center gap-1">
+                                    <span>{transaction.from.symbol}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {formatAddress(transaction.from.address)}
+                                    </span>
+                                  </div>
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-xs">
                                   <p className="font-mono text-xs">{transaction.from.address}</p>
@@ -388,13 +386,16 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span>{transaction.to.symbol}</span>
+                            <span className="text-green-600">{transaction.to.amount}</span>
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className="text-xs text-muted-foreground">
-                                    {formatAddress(transaction.to.address)}
-                                  </span>
+                                  <div className="flex items-center gap-1">
+                                    <span>{transaction.to.symbol}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {formatAddress(transaction.to.address)}
+                                    </span>
+                                  </div>
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-xs">
                                   <p className="font-mono text-xs">{transaction.to.address}</p>
@@ -403,7 +404,6 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                             </TooltipProvider>
                           </div>
                         </TableCell>
-                        <TableCell>{transaction.amount}</TableCell>
                         <TableCell className="text-right">
                           {transaction.gas}
                           <span className="ml-1 text-xs text-muted-foreground">BNB</span>

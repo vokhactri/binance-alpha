@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server'
-import pLimit from 'p-limit'
-import { uniqBy } from 'lodash-es'
-import { getTokenPrice, getTransactions } from '@/lib/api'
+import { getTransactions } from '@/lib/api'
 import { isAddressEqual, formatEther, formatUnits, zeroAddress } from 'viem'
-import { getSwapInfo, isNativeToken, retry } from '@/lib/utils'
-import { BN_DEX_ROUTER_ADDRESS } from '@/constants'
+import { getSwapInfo, retry } from '@/lib/utils'
+import { BN_DEX_ROUTER_ADDRESS, USDT_ADDRESS } from '@/constants'
 import alphaTokens from '@/constants/tokens'
 import type { Hex } from 'viem'
 
@@ -42,10 +40,7 @@ export async function GET(request: Request) {
 
   if (!rawNormalTransactions?.length && !rawTokenTransactions?.length) {
     console.log('No transactions found for address:', address)
-    return NextResponse.json({
-      transactions: [],
-      tokens: [],
-    })
+    return NextResponse.json([])
   }
 
   while (!rawNormalTransactions?.length && rawTokenTransactions?.length) {
@@ -71,89 +66,108 @@ export async function GET(request: Request) {
   const normalTransactions = rawNormalTransactions.filter(
     (tx) => isAddressEqual(tx.from, address) && isAddressEqual(tx.to, BN_DEX_ROUTER_ADDRESS)
   )
-  const limit = pLimit(100)
-  const promises = normalTransactions.map((tx) => limit(() => retry(getSwapInfo, 3)(tx)))
-  const swapInfos = await Promise.all(promises)
-  const uniqueTokens = uniqBy(
-    [
-      { symbol: 'BNB', address: zeroAddress, decimals: 18 },
-      ...swapInfos.flatMap((tx) => [
-        { symbol: tx.from.symbol, address: tx.from.address, decimals: tx.from.decimals },
-        { symbol: tx.to.symbol, address: tx.to.address, decimals: tx.to.decimals },
-      ]),
-    ],
-    (token) => token.address
-  )
-  const priceMap = await Promise.all(
-    uniqueTokens.map(async (token) => {
-      const price = await getTokenPrice(token)
-      return {
-        ...token,
-        price,
-      }
-    })
-  )
 
-  const transactions = normalTransactions
-    .map((tx, index) => ({
+  const tokenTransactions = rawTokenTransactions.filter((tx) => BigInt(tx.value) === 0n || BigInt(tx.value) > 1n)
+
+  const transactions: {
+    hash: string
+    timestamp: number
+    status: 'success' | 'failed'
+    gas: number
+    from?: {
+      address: Hex
+      symbol: string
+      decimals: number
+      amount: number
+    }
+    to?: {
+      address: Hex
+      symbol: string
+      decimals: number
+      amount: number
+    }
+  }[] = []
+
+  for (const tx of normalTransactions) {
+    const status = tx.isError === '0' && tx.txreceipt_status === '1' ? 'success' : 'failed'
+
+    let from, to
+    if (status === 'failed') {
+      ;({ from, to } = await retry(getSwapInfo, 3)(tx))
+    }
+
+    transactions.push({
       hash: tx.hash,
       timestamp: Number(tx.timeStamp),
+      status,
       gas: Number(formatEther(BigInt(tx.gasUsed) * BigInt(tx.gasPrice))),
-      status: tx.isError === '0' && tx.txreceipt_status === '1' ? 'success' : 'failed',
-      ...swapInfos[index],
-      amountUSD:
-        swapInfos[index].amount *
-        priceMap.find((token) => isAddressEqual(token.address, swapInfos[index].from.address))!.price,
-    }))
+      from:
+        Number(tx.value) > 0
+          ? {
+              address: zeroAddress,
+              symbol: 'BNB',
+              decimals: 18,
+              amount: Number(formatEther(BigInt(tx.value))),
+            }
+          : from,
+      to,
+    })
+  }
+
+  for (const tx of rawInternalTransactions) {
+    const transaction = transactions.find((t) => t.hash === tx.hash)
+    if (transaction) {
+      if (isAddressEqual(tx.from, address)) {
+        transaction.from = {
+          address: zeroAddress,
+          symbol: 'BNB',
+          decimals: 18,
+          amount: Number(formatEther(BigInt(tx.value))),
+        }
+      }
+      if (isAddressEqual(tx.to, address)) {
+        transaction.to = {
+          address: zeroAddress,
+          symbol: 'BNB',
+          decimals: 18,
+          amount: Number(formatEther(BigInt(tx.value))),
+        }
+      }
+    }
+  }
+
+  for (const tx of tokenTransactions) {
+    const transaction = transactions.find((t) => t.hash === tx.hash)
+    if (transaction) {
+      if (isAddressEqual(tx.from, address)) {
+        transaction.from = {
+          address: tx.contractAddress,
+          symbol: isAddressEqual(tx.contractAddress, USDT_ADDRESS) ? 'USDT' : tx.tokenSymbol,
+          decimals: Number(tx.tokenDecimal),
+          amount: Number(formatUnits(BigInt(tx.value), Number(tx.tokenDecimal))),
+        }
+      }
+      if (isAddressEqual(tx.to, address)) {
+        transaction.to = {
+          address: tx.contractAddress,
+          symbol: isAddressEqual(tx.contractAddress, USDT_ADDRESS) ? 'USDT' : tx.tokenSymbol,
+          decimals: Number(tx.tokenDecimal),
+          amount: Number(formatUnits(BigInt(tx.value), Number(tx.tokenDecimal))),
+        }
+      }
+    }
+  }
+
+  const resolvedTransactions = transactions
     .filter((tx) =>
       alphaTokens.some(
         (token) =>
-          isAddressEqual(token.contractAddress, tx.from.address) || isAddressEqual(token.contractAddress, tx.to.address)
+          tx.status === 'failed' ||
+          isAddressEqual(token.contractAddress, tx.from!.address) ||
+          isAddressEqual(token.contractAddress, tx.to!.address)
       )
     )
     .sort((a, b) => b.timestamp - a.timestamp)
 
-  const totalGas = transactions.reduce((sum, tx) => sum + tx.gas, 0)
-  const bnbOut =
-    transactions
-      .filter((tx) => tx.from.symbol === 'BNB' && tx.status === 'success')
-      .reduce((sum, tx) => sum + tx.amount, 0) + totalGas
-  const internalTransactions = rawInternalTransactions.filter(
-    (tx) => isAddressEqual(tx.from, BN_DEX_ROUTER_ADDRESS) && isAddressEqual(tx.to, address)
-  )
-  const bnbInWei = internalTransactions.reduce((sum, tx) => sum + BigInt(tx.value), 0n)
-  const bnbIn = Number(formatEther(bnbInWei))
-
-  const tokens = priceMap.map((p) => {
-    if (isNativeToken(p.address)) {
-      return {
-        address: zeroAddress,
-        symbol: 'BNB',
-        in: bnbIn,
-        out: bnbOut,
-        price: p.price,
-      }
-    }
-
-    const tokenTransactions = rawTokenTransactions.filter((token) => transactions.some((tx) => tx.hash === token.hash))
-    const inAmountWei = tokenTransactions
-      .filter((token) => isAddressEqual(token.contractAddress, p.address) && isAddressEqual(token.to, address))
-      .reduce((sum, token) => sum + BigInt(token.value), 0n)
-    const outAmountWei = tokenTransactions
-      .filter((token) => isAddressEqual(token.contractAddress, p.address) && isAddressEqual(token.from, address))
-      .reduce((sum, token) => sum + BigInt(token.value), 0n)
-
-    return {
-      address: p.address,
-      symbol: p.symbol,
-      in: Number(formatUnits(inAmountWei, p.decimals)),
-      out: Number(formatUnits(outAmountWei, p.decimals)),
-      price: p.price,
-    }
-  })
-
-  return NextResponse.json({
-    transactions,
-    tokens,
-  })
+  return NextResponse.json(resolvedTransactions)
 }
