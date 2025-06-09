@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { isAddress } from 'viem'
-import { Search } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -44,17 +44,29 @@ export default function TransactionSearch({
   }
 
   return (
-    <div className="flex gap-2">
-      <Input
-        name="wallet-address"
-        id="wallet-address-input"
-        type="text"
-        placeholder="请输入钱包地址 (0x...)"
-        value={address}
-        onChange={(e) => setAddress(e.target.value as Hex)}
-        className="flex-1"
-        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-      />
+    <div className="w-full flex items-center gap-2">
+      <div className="relative flex-1">
+        <Input
+          name="wallet-address"
+          id="wallet-address-input"
+          type="text"
+          placeholder="请输入钱包地址 (0x...)"
+          value={address}
+          onChange={(e) => setAddress(e.target.value as Hex)}
+          className="pr-8"
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+        />
+        {address && (
+          <button
+            type="button"
+            onClick={() => setAddress('' as Hex)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            aria-label="清空输入"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
       <Button onClick={handleSearch} disabled={isLoading}>
         <Search className="h-4 w-4" />
       </Button>
