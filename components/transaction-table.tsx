@@ -366,7 +366,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span className="text-green-600">{transaction.from.amount}</span>
+                            <span className="text-green-600 font-semibold">{transaction.from.amount}</span>
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -386,7 +386,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span className="text-green-600">{transaction.to.amount}</span>
+                            <span className="text-green-600 font-semibold">{transaction.to.amount}</span>
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>

@@ -18,19 +18,19 @@ export async function GET(request: Request) {
 
   // eslint-disable-next-line prefer-const
   let [rawNormalTransactions = [], rawInternalTransactions = [], rawTokenTransactions = []] = await Promise.all([
-    getTransactions({
+    retry(getTransactions, 3)({
       action: 'txlist',
       address,
       startblock,
       endblock,
     }),
-    getTransactions({
+    retry(getTransactions, 3)({
       action: 'txlistinternal',
       address,
       startblock,
       endblock,
     }),
-    getTransactions({
+    retry(getTransactions, 3)({
       action: 'tokentx',
       address,
       startblock,

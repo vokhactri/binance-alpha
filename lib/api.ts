@@ -128,5 +128,8 @@ export async function getTransactions<T extends keyof TransactionActionMap>({
       sort: 'desc',
     },
   })
+  if (typeof res.data.result === 'string' && (res.data.result as string)?.includes('rate limit reached')) {
+    throw new Error('Max daily rate limit reached. 110000 (100%) of 100000 day/limit')
+  }
   return res.data.result
 }
