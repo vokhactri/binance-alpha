@@ -115,8 +115,10 @@ export function useTransaction(address: Hex, startblock = 0, endblock = 99999999
       })
       const tokens = await computeTokenSummaries(transactions, tokenPriceCache, setTokenPriceCache)
       const transactionsWithPrices = transactions.map((tx) => {
-        const { price: fromTokenPrice } = tokens.find((t) => isAddressEqual(t.address, tx.from.address))!
-        const { price: toTokenPrice } = tokens.find((t) => isAddressEqual(t.address, tx.to.address))!
+        const { price: fromTokenPrice } =
+          tokens.find((t) => isAddressEqual(t.address, tx.from.address)) || ({} as TokenInfo)
+        const { price: toTokenPrice } =
+          tokens.find((t) => isAddressEqual(t.address, tx.to.address)) || ({} as TokenInfo)
         return {
           ...tx,
           from: {
