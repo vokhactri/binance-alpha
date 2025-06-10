@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect } from 'react'
+import { use } from 'react'
 import { isAddressEqual } from 'viem'
 import { motion } from 'motion/react'
 import { AlertCircle } from 'lucide-react'
@@ -9,6 +9,7 @@ import dayjs from '@/lib/dayjs'
 import { getDynamicTimeRange } from '@/lib/utils'
 import { useBlockNumber } from '@/hooks/use-block'
 import { useTransaction } from '@/hooks/use-transaction'
+import WalletSelector from '@/components/wallet-selector'
 import TransactionSearch from '@/components/transaction-search'
 import WalletOverview from '@/components/wallet-overview'
 import TransactionTable from '@/components/transaction-table'
@@ -32,13 +33,10 @@ export default function TransactionPage({ params }: { params: Promise<{ address:
     }
   }
 
-  useEffect(() => {
-    refetch()
-  }, [address, blockNumber, refetch])
-
   return (
     <>
-      <div className="w-full max-w-5xl">
+      <div className="w-full max-w-5xl flex items-center gap-2">
+        <WalletSelector />
         <TransactionSearch isLoading={isFetching} defaultAddress={address} onSearch={handleSearch} />
       </div>
       <div className="w-full max-w-5xl">

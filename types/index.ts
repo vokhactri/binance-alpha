@@ -133,3 +133,9 @@ export interface TokenInfo {
   out: number
   price: number
 }
+
+export interface Wallet {
+  address: Hex
+  label: string
+  disabled?: boolean
+}

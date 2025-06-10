@@ -125,4 +125,7 @@
   [role='button']:not(:disabled) {
     cursor: pointer;
   }
+  button[id='wallet-selector'] > span {
+    @apply !hidden md:!flex;
+  }
 }

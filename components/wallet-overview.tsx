@@ -10,8 +10,9 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatAddress, calculatePoints, cn } from '@/lib/utils'
 import alphaTokens from '@/constants/tokens'
+import { useLocalStorage } from '@/hooks/use-local-storage'
 import type { Hex } from 'viem'
-import type { TransactionInfo, TokenInfo } from '@/types'
+import type { TransactionInfo, TokenInfo, Wallet } from '@/types'
 
 interface WalletOverviewProps {
   data: {
@@ -55,6 +56,9 @@ const WalletOverviewSkeleton = () => (
 export default function WalletOverview({ data, isLoading }: WalletOverviewProps) {
   const { address, transactions, tokens } = data
   const [copied, setCopied] = useState(false)
+  const [wallets] = useLocalStorage<Wallet[]>('walletList', [])
+
+  const walletTitle = wallets.find((w) => isAddressEqual(w.address, address))?.label || '未命名钱包'
 
   if (isLoading) {
     return <WalletOverviewSkeleton />
@@ -85,9 +89,9 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">钱包</CardTitle>
-        <CardDescription className="flex items-center gap-2">
-          <span>{formatAddress(address)}</span>
+        <CardTitle className="text-xl truncate">{walletTitle}</CardTitle>
+        <CardDescription className="flex items-center">
+          <span className="mr-1">{formatAddress(address)}</span>
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={copyToClipboard} title="复制地址">
             {copied ? <CheckCheck className="animate-bounce" size={12} /> : <Copy size={12} />}
           </Button>

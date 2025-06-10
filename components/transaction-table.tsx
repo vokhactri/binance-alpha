@@ -41,136 +41,134 @@ interface TransactionSettings {
   timeFormat: 'relative' | 'absolute'
 }
 
-const TransactionTableSkeleton = () => {
-  return (
-    <Tabs value="0" className="w-full">
-      <TabsList>
-        <TabsTrigger value="0">
-          交易视图
-          <Badge variant="secondary" className="flex items-center justify-center rounded-full bg-muted-foreground/30">
-            0
-          </Badge>
-        </TabsTrigger>
-        <TabsTrigger value="1">
-          代币视图
-          <Badge variant="secondary" className="flex items-center justify-center rounded-full bg-muted-foreground/30">
-            0
-          </Badge>
-        </TabsTrigger>
-      </TabsList>
+const TransactionTableSkeleton = () => (
+  <Tabs value="0" className="w-full">
+    <TabsList>
+      <TabsTrigger value="0">
+        交易视图
+        <Badge variant="secondary" className="flex items-center justify-center rounded-full bg-muted-foreground/30">
+          0
+        </Badge>
+      </TabsTrigger>
+      <TabsTrigger value="1">
+        代币视图
+        <Badge variant="secondary" className="flex items-center justify-center rounded-full bg-muted-foreground/30">
+          0
+        </Badge>
+      </TabsTrigger>
+    </TabsList>
 
-      <TabsContent value="0">
-        <div className="w-full overflow-hidden rounded-lg border">
-          <div className="bg-background">
-            <Table>
-              <TableHeader className="bg-muted/50">
-                <TableRow>
-                  <TableHead className="w-16">#</TableHead>
-                  <TableHead>交易哈希</TableHead>
-                  <TableHead className="flex items-center">
-                    时间
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                      <Clock className="h-3 w-3" />
-                    </Button>
-                  </TableHead>
-                  <TableHead>源代币</TableHead>
-                  <TableHead>目标代币</TableHead>
-                  <TableHead className="text-right">手续费</TableHead>
+    <TabsContent value="0">
+      <div className="w-full overflow-hidden rounded-lg border">
+        <div className="bg-background">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead className="w-16">#</TableHead>
+                <TableHead>交易哈希</TableHead>
+                <TableHead className="flex items-center">
+                  时间
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <Clock className="h-3 w-3" />
+                  </Button>
+                </TableHead>
+                <TableHead>源代币</TableHead>
+                <TableHead>目标代币</TableHead>
+                <TableHead className="text-right">手续费</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className="h-5 w-8" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Skeleton className="h-5 w-28" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-36" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <Skeleton className="h-5 w-12" />
+                      <Skeleton className="h-5 w-20" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <Skeleton className="h-5 w-12" />
+                      <Skeleton className="h-5 w-20" />
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-5 w-20 ml-auto" />
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton className="h-5 w-8" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <Skeleton className="h-5 w-28" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-36" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <Skeleton className="h-5 w-12" />
-                        <Skeleton className="h-5 w-20" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <Skeleton className="h-5 w-12" />
-                        <Skeleton className="h-5 w-20" />
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-5 w-20 ml-auto" />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+              ))}
+            </TableBody>
+          </Table>
         </div>
-      </TabsContent>
+      </div>
+    </TabsContent>
 
-      <TabsContent value="1">
-        <div className="w-full overflow-hidden rounded-lg border">
-          <div className="bg-background">
-            <Table>
-              <TableHeader className="bg-muted/50">
-                <TableRow>
-                  <TableHead className="w-16">#</TableHead>
-                  <TableHead>代币</TableHead>
-                  <TableHead>流入</TableHead>
-                  <TableHead>流出</TableHead>
-                  <TableHead>净流入</TableHead>
-                  <TableHead className="text-right">利润</TableHead>
+    <TabsContent value="1">
+      <div className="w-full overflow-hidden rounded-lg border">
+        <div className="bg-background">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead className="w-16">#</TableHead>
+                <TableHead>代币</TableHead>
+                <TableHead>流入</TableHead>
+                <TableHead>流出</TableHead>
+                <TableHead>净流入</TableHead>
+                <TableHead className="text-right">利润</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className="h-5 w-8" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <Skeleton className="h-5 w-12" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Skeleton className="h-5 w-36" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-36" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-36" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-5 w-20 ml-auto" />
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton className="h-5 w-8" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <Skeleton className="h-5 w-12" />
-                        <Skeleton className="h-3 w-20" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <Skeleton className="h-5 w-36" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-36" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-36" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-5 w-20 ml-auto" />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+              ))}
+            </TableBody>
+          </Table>
         </div>
-      </TabsContent>
-    </Tabs>
-  )
-}
+      </div>
+    </TabsContent>
+  </Tabs>
+)
 
 export default function TransactionTable({ data, isLoading }: TransactionsTableProps) {
   const { transactions, tokens } = data
   const [settings, setSettings] = useLocalStorage<TransactionSettings>('transactionSettings', {
     activeTab: '0',
-    filter: 'buy',
+    filter: 'all',
     showFailed: false,
     timeFormat: 'relative',
   })
