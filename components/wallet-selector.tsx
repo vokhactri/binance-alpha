@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { isAddressEqual, isAddress } from 'viem'
+import { isAddress } from 'viem'
 import { useRouter, usePathname } from 'next/navigation'
 import {
   DndContext,
@@ -29,14 +29,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Dialog, DialogContent, DialogHeader, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from '@/components/ui/custom-select'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { cn, formatAddress } from '@/lib/utils'
+import { cn, formatAddress, isAddressEqual } from '@/lib/utils'
 import { useLocalStorage } from '@/hooks/use-local-storage'
 import type { Hex } from 'viem'
 import type { Wallet } from '@/types'
 
 function SortableWalletItem({
   wallet,
-  editingInlineWallet,
+  editingInlineWalletAddress,
   inlineEditLabel,
   setInlineEditLabel,
   handleSaveInlineEdit,
@@ -47,10 +47,10 @@ function SortableWalletItem({
   copyToClipboard,
 }: {
   wallet: Wallet
-  editingInlineWallet: string | null
+  editingInlineWalletAddress: Hex
   inlineEditLabel: string
   setInlineEditLabel: (value: string) => void
-  handleSaveInlineEdit: (address: string) => void
+  handleSaveInlineEdit: (address: Hex) => void
   handleCancelInlineEdit: () => void
   handleStartInlineEdit: (wallet: Wallet) => void
   handleDeleteWallet: (wallet: Wallet) => void
@@ -65,7 +65,7 @@ function SortableWalletItem({
     opacity: isDragging ? 0.5 : 1,
   }
 
-  const isEditing = editingInlineWallet === wallet.address
+  const isEditing = isAddressEqual(editingInlineWalletAddress, wallet.address)
 
   return (
     <div
@@ -96,7 +96,7 @@ function SortableWalletItem({
             <div className="font-medium text-sm truncate max-w-[200px] md:max-w-[300px]">{wallet.label}</div>
             <div className="text-xs text-muted-foreground flex items-center gap-1">
               <span>{formatAddress(wallet.address)}</span>
-              {isAddress(copiedAddress) && isAddressEqual(copiedAddress, wallet.address) ? (
+              {isAddressEqual(copiedAddress, wallet.address) ? (
                 <CheckCheck className="size-3 cursor-pointer animate-bounce" />
               ) : (
                 <Copy
@@ -145,12 +145,12 @@ function SortableWalletItem({
 
 export default function WalletSelector() {
   const [isMounted, setIsMounted] = useState(false)
-  const [selectedWallet, setSelectedWallet] = useState<Hex>('' as Hex)
+  const [selectedWalletAddress, setSelectedWalletAddress] = useState<Hex>('' as Hex)
   const [wallets, setWallets] = useLocalStorage<Wallet[]>('walletList', [])
   const [manageOpen, setManageOpen] = useState(false)
   const [newWalletAddress, setNewWalletAddress] = useState<Hex>('' as Hex)
   const [newWalletLabel, setNewWalletLabel] = useState('')
-  const [editingInlineWallet, setEditingInlineWallet] = useState<string | null>(null)
+  const [editingInlineWalletAddress, setEditingInlineWalletAddress] = useState<Hex>('' as Hex)
   const [inlineEditLabel, setInlineEditLabel] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectOpen, setSelectOpen] = useState(false)
@@ -170,7 +170,7 @@ export default function WalletSelector() {
     })
   )
 
-  const selectedWalletData = wallets.find((w) => w.address === selectedWallet)
+  const selectedWallet = wallets.find((w) => isAddressEqual(w.address, selectedWalletAddress))
 
   const filteredWallets = wallets.filter(
     (wallet) =>
@@ -183,8 +183,8 @@ export default function WalletSelector() {
   }, [])
 
   useEffect(() => {
-    if (addressFromPath && wallets.some((w) => w.address.toLowerCase() === addressFromPath.toLowerCase())) {
-      setSelectedWallet(addressFromPath)
+    if (addressFromPath && wallets.some((w) => isAddressEqual(w.address, addressFromPath))) {
+      setSelectedWalletAddress(addressFromPath)
     }
   }, [addressFromPath, wallets])
 
@@ -200,7 +200,7 @@ export default function WalletSelector() {
   }
 
   const handleSelectWallet = (value: Hex) => {
-    setSelectedWallet(value)
+    setSelectedWalletAddress(value)
     setSelectOpen(false)
     setSearchTerm('')
     router.push(`/${value}`)
@@ -231,9 +231,9 @@ export default function WalletSelector() {
   }
 
   const handleDeleteWallet = (walletToDelete: Wallet) => {
-    setWallets(wallets.filter((w) => w.address !== walletToDelete.address))
-    if (selectedWallet === walletToDelete.address) {
-      setSelectedWallet('' as Hex)
+    setWallets(wallets.filter((w) => !isAddressEqual(w.address, walletToDelete.address)))
+    if (isAddressEqual(walletToDelete.address, selectedWalletAddress)) {
+      setSelectedWalletAddress('' as Hex)
     }
     toast.success('钱包已删除！')
   }
@@ -252,20 +252,20 @@ export default function WalletSelector() {
   }
 
   const handleStartInlineEdit = (wallet: Wallet) => {
-    setEditingInlineWallet(wallet.address)
+    setEditingInlineWalletAddress(wallet.address)
     setInlineEditLabel(wallet.label)
   }
 
-  const handleSaveInlineEdit = (walletValue: string) => {
+  const handleSaveInlineEdit = (address: Hex) => {
     if (inlineEditLabel.trim()) {
-      setWallets(wallets.map((w) => (w.address === walletValue ? { ...w, label: inlineEditLabel.trim() } : w)))
+      setWallets(wallets.map((w) => (isAddressEqual(w.address, address) ? { ...w, label: inlineEditLabel.trim() } : w)))
     }
-    setEditingInlineWallet(null)
-    setInlineEditLabel('')
+    setEditingInlineWalletAddress('' as Hex)
+    setInlineEditLabel('' as Hex)
   }
 
   const handleCancelInlineEdit = () => {
-    setEditingInlineWallet(null)
+    setEditingInlineWalletAddress('' as Hex)
     setInlineEditLabel('')
   }
 
@@ -282,7 +282,7 @@ export default function WalletSelector() {
         </Button>
       ) : (
         <Select
-          value={selectedWallet}
+          value={selectedWalletAddress}
           onValueChange={handleSelectWallet}
           open={selectOpen}
           onOpenChange={(open) => {
@@ -294,7 +294,7 @@ export default function WalletSelector() {
         >
           <SelectTrigger id="wallet-selector" className="w-10 md:w-40">
             <SelectValue placeholder="选择钱包">
-              {selectedWalletData && <span className="truncate">{selectedWalletData.label}</span>}
+              {selectedWallet && <span className="truncate">{selectedWallet.label}</span>}
             </SelectValue>
           </SelectTrigger>
 
@@ -333,10 +333,7 @@ export default function WalletSelector() {
                   key={wallet.address}
                   value={wallet.address}
                   disabled={wallet.disabled}
-                  className={cn(
-                    'cursor-pointer',
-                    isAddress(selectedWallet) && isAddressEqual(wallet.address, selectedWallet) && 'bg-accent'
-                  )}
+                  className={cn('cursor-pointer', isAddressEqual(wallet.address, selectedWalletAddress) && 'bg-accent')}
                 >
                   <div className="flex flex-col gap-1 items-start w-full max-w-[300px]">
                     <span className="font-medium text-sm w-full truncate">{wallet.label}</span>
@@ -400,7 +397,7 @@ export default function WalletSelector() {
                         <SortableWalletItem
                           key={wallet.address}
                           wallet={wallet}
-                          editingInlineWallet={editingInlineWallet}
+                          editingInlineWalletAddress={editingInlineWalletAddress}
                           inlineEditLabel={inlineEditLabel}
                           setInlineEditLabel={setInlineEditLabel}
                           handleSaveInlineEdit={handleSaveInlineEdit}

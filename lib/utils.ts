@@ -8,7 +8,8 @@ import {
   http,
   ethAddress,
   zeroAddress,
-  isAddressEqual,
+  isAddress,
+  isAddressEqual as _isAddressEqual,
   formatUnits,
 } from 'viem'
 import { bsc } from 'viem/chains'
@@ -28,6 +29,11 @@ export function cn(...inputs: ClassValue[]) {
 export function formatAddress(address: string): string {
   if (!address) return ''
   return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
+
+export function isAddressEqual(a: Hex, b: Hex): boolean {
+  if (!isAddress(a) || !isAddress(b)) return false
+  return _isAddressEqual(a, b)
 }
 
 export function getRandomElementFromArray<T>(array: readonly T[], count?: 1): T
