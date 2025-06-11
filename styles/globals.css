@@ -128,4 +128,7 @@
   button[id='wallet-selector'] > span {
     @apply !hidden md:!flex;
   }
+  section[aria-label='Notifications alt+T'] > ol {
+    @apply !w-[unset] sm:!w-full;
+  }
 }

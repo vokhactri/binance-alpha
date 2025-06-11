@@ -23,10 +23,16 @@ export default async function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <Providers>
           <div className="container mx-auto py-8 px-4">
-        <Dashboard>{children}</Dashboard>
-        <Footer />
+            <Dashboard>{children}</Dashboard>
+            <Footer />
           </div>
-          <Toaster richColors />
+          <Toaster
+            position="top-center"
+            className="flex justify-center"
+            offset={{ top: '12px' }}
+            mobileOffset={{ top: '8px' }}
+            toastOptions={{ style: { width: 'fit-content', margin: '0 auto' } }}
+          />
         </Providers>
       </body>
     </html>
