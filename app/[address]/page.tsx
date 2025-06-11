@@ -1,12 +1,11 @@
 'use client'
 
 import { use } from 'react'
-import { isAddressEqual } from 'viem'
 import { motion } from 'motion/react'
 import { AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import dayjs from '@/lib/dayjs'
-import { getDynamicTimeRange } from '@/lib/utils'
+import { isAddressEqual, getDynamicTimeRange } from '@/lib/utils'
 import { useBlockNumber } from '@/hooks/use-block'
 import { useTransaction } from '@/hooks/use-transaction'
 import WalletSelector from '@/components/wallet-selector'

@@ -1,8 +1,9 @@
 import axios from 'axios'
+import { zeroAddress } from 'viem'
 import { useQuery } from '@tanstack/react-query'
 import { useLocalStorage } from '@/hooks/use-local-storage'
 import { getTokenPrice } from '@/lib/api'
-import { isAddressEqual, zeroAddress } from 'viem'
+import { isAddressEqual } from '@/lib/utils'
 import type { Hex } from 'viem'
 import type { TransactionInfo, TokenInfo } from '@/types'
 
