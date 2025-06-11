@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Copy, ExternalLink, CheckCheck, Milestone } from 'lucide-react'
+import { useAtom } from 'jotai'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
@@ -9,9 +10,9 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatAddress, isAddressEqual, calculatePoints, cn } from '@/lib/utils'
 import alphaTokens from '@/constants/tokens'
-import { useLocalStorage } from '@/hooks/use-local-storage'
+import { walletsAtom } from '@/atoms'
 import type { Hex } from 'viem'
-import type { TransactionInfo, TokenInfo, Wallet } from '@/types'
+import type { TransactionInfo, TokenInfo } from '@/types'
 
 interface WalletOverviewProps {
   data: {
@@ -55,9 +56,12 @@ const WalletOverviewSkeleton = () => (
 export default function WalletOverview({ data, isLoading }: WalletOverviewProps) {
   const { address, transactions, tokens } = data
   const [copied, setCopied] = useState(false)
-  const [wallets] = useLocalStorage<Wallet[]>('walletList', [])
+  const [wallets] = useAtom(walletsAtom)
 
-  const walletTitle = wallets.find((w) => isAddressEqual(w.address, address))?.label || '未命名钱包'
+  const walletTitle = useMemo(
+    () => wallets.find((w) => isAddressEqual(w.address, address))?.label || '未命名钱包',
+    [wallets, address]
+  )
 
   if (isLoading) {
     return <WalletOverviewSkeleton />

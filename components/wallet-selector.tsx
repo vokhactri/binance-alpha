@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { isAddress } from 'viem'
+import { useAtom } from 'jotai'
 import { useRouter, usePathname } from 'next/navigation'
 import {
   DndContext,
@@ -30,7 +31,7 @@ import { Dialog, DialogContent, DialogHeader, DialogDescription, DialogTitle } f
 import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from '@/components/ui/custom-select'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn, formatAddress, isAddressEqual } from '@/lib/utils'
-import { useLocalStorage } from '@/hooks/use-local-storage'
+import { walletsAtom } from '@/atoms'
 import type { Hex } from 'viem'
 import type { Wallet } from '@/types'
 
@@ -145,8 +146,8 @@ function SortableWalletItem({
 
 export default function WalletSelector() {
   const [isMounted, setIsMounted] = useState(false)
+  const [wallets, setWallets] = useAtom(walletsAtom)
   const [selectedWalletAddress, setSelectedWalletAddress] = useState<Hex>('' as Hex)
-  const [wallets, setWallets] = useLocalStorage<Wallet[]>('walletList', [])
   const [manageOpen, setManageOpen] = useState(false)
   const [newWalletAddress, setNewWalletAddress] = useState<Hex>('' as Hex)
   const [newWalletLabel, setNewWalletLabel] = useState('')
@@ -230,11 +231,9 @@ export default function WalletSelector() {
     toast.success('钱包已添加！')
   }
 
-  const handleDeleteWallet = (walletToDelete: Wallet) => {
-    setWallets(wallets.filter((w) => !isAddressEqual(w.address, walletToDelete.address)))
-    if (isAddressEqual(walletToDelete.address, selectedWalletAddress)) {
-      setSelectedWalletAddress('' as Hex)
-    }
+  const handleDeleteWallet = (wallet: Wallet) => {
+    setWallets(wallets.filter((w) => !isAddressEqual(w.address, wallet.address)))
+    if (isAddressEqual(wallet.address, selectedWalletAddress)) setSelectedWalletAddress('' as Hex)
     toast.success('钱包已删除！')
   }
 
@@ -245,7 +244,6 @@ export default function WalletSelector() {
       setWallets((items) => {
         const oldIndex = items.findIndex((item) => item.address === active.id)
         const newIndex = items.findIndex((item) => item.address === over.id)
-
         return arrayMove(items, oldIndex, newIndex)
       })
     }
