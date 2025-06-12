@@ -18,19 +18,28 @@ export async function GET(request: Request) {
 
   // eslint-disable-next-line prefer-const
   let [rawNormalTransactions = [], rawInternalTransactions = [], rawTokenTransactions = []] = await Promise.all([
-    retry(getTransactions, 3)({
+    retry(
+      getTransactions,
+      3
+    )({
       action: 'txlist',
       address,
       startblock,
       endblock,
     }),
-    retry(getTransactions, 3)({
+    retry(
+      getTransactions,
+      3
+    )({
       action: 'txlistinternal',
       address,
       startblock,
       endblock,
     }),
-    retry(getTransactions, 3)({
+    retry(
+      getTransactions,
+      3
+    )({
       action: 'tokentx',
       address,
       startblock,
@@ -43,7 +52,12 @@ export async function GET(request: Request) {
     return NextResponse.json([])
   }
 
-  while (!rawNormalTransactions?.length && rawTokenTransactions?.length) {
+  while (
+    !rawNormalTransactions?.length &&
+    rawTokenTransactions?.filter((tx) =>
+      alphaTokens.some((token) => isAddressEqual(token.contractAddress, tx.contractAddress))
+    ).length
+  ) {
     console.log('No normal transactions found, retrying with txlist...')
     rawNormalTransactions = await getTransactions({
       action: 'txlist',
