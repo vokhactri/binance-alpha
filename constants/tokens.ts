@@ -361,7 +361,7 @@ const tokens: AlphaTokenInfo[] = [
   {
     chainId: '56',
     contractAddress: '0xd55c9fb62e176a8eb6968f32958fefdd0962727e',
-    name: `Mind Network `,
+    name: `Mind Network`,
     symbol: 'FHE',
     decimals: 18,
   },
@@ -375,7 +375,7 @@ const tokens: AlphaTokenInfo[] = [
   {
     chainId: '56',
     contractAddress: '0xb7c0007ab75350c582d5eab1862b872b5cf53f0c',
-    name: `pumpBTC `,
+    name: `pumpBTC Governance Token`,
     symbol: 'PUMP',
     decimals: 18,
   },
@@ -389,7 +389,7 @@ const tokens: AlphaTokenInfo[] = [
   {
     chainId: '56',
     contractAddress: '0x503fa24b7972677f00c4618e5fbe237780c1df53',
-    name: `KiloEx `,
+    name: `KiloEx`,
     symbol: 'KILO',
     decimals: 18,
   },
