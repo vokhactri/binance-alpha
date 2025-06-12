@@ -21,6 +21,7 @@ export default antfu(
   {
     rules: {
       'no-console': 'off',
+      'unicorn/no-instanceof-builtins': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'off',
       'react/no-array-index-key': 'off',
