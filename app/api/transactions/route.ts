@@ -1,10 +1,10 @@
+import type { Hex } from 'viem'
 import { NextResponse } from 'next/server'
-import { getTransactions } from '@/lib/api'
 import { formatEther, formatUnits, zeroAddress } from 'viem'
-import { isAddressEqual, getSwapInfo, retry } from '@/lib/utils'
 import { BN_DEX_ROUTER_ADDRESS, USDT_ADDRESS } from '@/constants'
 import alphaTokens from '@/constants/tokens'
-import type { Hex } from 'viem'
+import { getTransactions } from '@/lib/api'
+import { getSwapInfo, isAddressEqual, retry } from '@/lib/utils'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -16,11 +16,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Address is required' }, { status: 400 })
   }
 
-  // eslint-disable-next-line prefer-const
   let [rawNormalTransactions = [], rawInternalTransactions = [], rawTokenTransactions = []] = await Promise.all([
     retry(
       getTransactions,
-      3
+      3,
     )({
       action: 'txlist',
       address,
@@ -29,7 +28,7 @@ export async function GET(request: Request) {
     }),
     retry(
       getTransactions,
-      3
+      3,
     )({
       action: 'txlistinternal',
       address,
@@ -38,7 +37,7 @@ export async function GET(request: Request) {
     }),
     retry(
       getTransactions,
-      3
+      3,
     )({
       action: 'tokentx',
       address,
@@ -53,9 +52,9 @@ export async function GET(request: Request) {
   }
 
   while (
-    !rawNormalTransactions?.length &&
-    rawTokenTransactions?.filter((tx) =>
-      alphaTokens.some((token) => isAddressEqual(token.contractAddress, tx.contractAddress))
+    !rawNormalTransactions?.length
+    && rawTokenTransactions?.filter(tx =>
+      alphaTokens.some(token => isAddressEqual(token.contractAddress, tx.contractAddress)),
     ).length
   ) {
     console.log('No normal transactions found, retrying with txlist...')
@@ -78,10 +77,10 @@ export async function GET(request: Request) {
   }
 
   const normalTransactions = rawNormalTransactions.filter(
-    (tx) => isAddressEqual(tx.from, address) && isAddressEqual(tx.to, BN_DEX_ROUTER_ADDRESS)
+    tx => isAddressEqual(tx.from, address) && isAddressEqual(tx.to, BN_DEX_ROUTER_ADDRESS),
   )
 
-  const tokenTransactions = rawTokenTransactions.filter((tx) => BigInt(tx.value) === 0n || BigInt(tx.value) > 1n)
+  const tokenTransactions = rawTokenTransactions.filter(tx => BigInt(tx.value) === 0n || BigInt(tx.value) > 1n)
 
   const transactions: {
     hash: string
@@ -129,7 +128,7 @@ export async function GET(request: Request) {
   }
 
   for (const tx of rawInternalTransactions) {
-    const transaction = transactions.find((t) => t.hash === tx.hash)
+    const transaction = transactions.find(t => t.hash === tx.hash)
     if (transaction) {
       if (isAddressEqual(tx.from, address)) {
         transaction.from = {
@@ -151,7 +150,7 @@ export async function GET(request: Request) {
   }
 
   for (const tx of tokenTransactions) {
-    const transaction = transactions.find((t) => t.hash === tx.hash)
+    const transaction = transactions.find(t => t.hash === tx.hash)
     if (transaction) {
       if (isAddressEqual(tx.from, address)) {
         transaction.from = {
@@ -173,13 +172,13 @@ export async function GET(request: Request) {
   }
 
   const resolvedTransactions = transactions
-    .filter((tx) =>
+    .filter(tx =>
       alphaTokens.some(
-        (token) =>
-          tx.status === 'failed' ||
-          isAddressEqual(token.contractAddress, tx.from!.address) ||
-          isAddressEqual(token.contractAddress, tx.to!.address)
-      )
+        token =>
+          tx.status === 'failed'
+          || isAddressEqual(token.contractAddress, tx.from!.address)
+          || isAddressEqual(token.contractAddress, tx.to!.address),
+      ),
     )
     .sort((a, b) => b.timestamp - a.timestamp)
 

@@ -1,10 +1,10 @@
-import axios from 'axios'
-import { apiKeys } from '@/configs'
-import { getRandomElementFromArray } from '@/lib/utils'
-import { WBNB_ADDRESS } from '@/constants'
-import { zeroAddress } from 'viem'
 import type { Hex } from 'viem'
 import type { AlphaTokenInfo, TransactionActionMap } from '@/types'
+import axios from 'axios'
+import { zeroAddress } from 'viem'
+import { apiKeys } from '@/configs'
+import { WBNB_ADDRESS } from '@/constants'
+import { getRandomElementFromArray } from '@/lib/utils'
 
 const client = axios.create({
   baseURL: 'https://api.etherscan.io',
@@ -19,11 +19,14 @@ client.interceptors.request.use(
     if (config.params) {
       if (config.params.action === 'txlist') {
         config.params.apikey = getRandomElementFromArray(apiKeys.txlist)
-      } else if (config.params.action === 'txlistinternal') {
+      }
+      else if (config.params.action === 'txlistinternal') {
         config.params.apikey = getRandomElementFromArray(apiKeys.txlistinternal)
-      } else if (config.params.action === 'tokentx') {
+      }
+      else if (config.params.action === 'tokentx') {
         config.params.apikey = getRandomElementFromArray(apiKeys.tokentx)
-      } else {
+      }
+      else {
         config.params.apikey = getRandomElementFromArray(apiKeys.default)
       }
     }
@@ -32,7 +35,7 @@ client.interceptors.request.use(
   (error) => {
     console.error('Request error:', error)
     return Promise.reject(error)
-  }
+  },
 )
 
 async function fetchTokenPriceFromCryptoCompare(symbol: string): Promise<number> {
@@ -66,8 +69,9 @@ async function fetchTokenPriceFromDexScreener(symbol: string, address: Hex): Pro
   return Number(price)
 }
 
-export async function getTokenPrice({ symbol, address }: { symbol: string; address: Hex }): Promise<number> {
-  if (symbol === 'USDT') return 1
+export async function getTokenPrice({ symbol, address }: { symbol: string, address: Hex }): Promise<number> {
+  if (symbol === 'USDT')
+    return 1
 
   const priceFetchStrategies = [
     () => fetchTokenPriceFromCryptoCompare(symbol),
@@ -78,12 +82,13 @@ export async function getTokenPrice({ symbol, address }: { symbol: string; addre
   for (const strategy of priceFetchStrategies) {
     try {
       const price = await strategy()
-      if (price !== undefined) return price
-    } catch (e: any) {
+      if (price !== undefined)
+        return price
+    }
+    catch (e: any) {
       console.warn(`Price fetch failed: ${e.message}`)
     }
   }
-
   throw new Error('All token price fetching strategies failed')
 }
 
@@ -97,12 +102,12 @@ export async function getBlockNumberByTimestamp(timestamp: number) {
     },
   })
   const blockNumber = Number(res.data.result)
-  return isNaN(blockNumber) ? 99999999 : blockNumber
+  return Number.isNaN(blockNumber) ? 99999999 : blockNumber
 }
 
 export async function getAlphaTokens(): Promise<AlphaTokenInfo[]> {
   const res = await axios.get(
-    'https://www.binance.com/bapi/defi/v1/public/wallet-direct/buw/wallet/cex/alpha/all/token/list'
+    'https://www.binance.com/bapi/defi/v1/public/wallet-direct/buw/wallet/cex/alpha/all/token/list',
   )
   return res.data.data.filter((token: AlphaTokenInfo) => token.chainId === '56')
 }

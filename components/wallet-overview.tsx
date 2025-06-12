@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { Copy, ExternalLink, CheckCheck, Milestone } from 'lucide-react'
+import type { Hex } from 'viem'
+import type { TokenInfo, TransactionInfo } from '@/types'
 import { useAtom } from 'jotai'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
+import { CheckCheck, Copy, ExternalLink, Milestone } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { walletsAtom } from '@/atoms'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatAddress, isAddressEqual, calculatePoints, cn } from '@/lib/utils'
 import alphaTokens from '@/constants/tokens'
-import { walletsAtom } from '@/atoms'
-import type { Hex } from 'viem'
-import type { TransactionInfo, TokenInfo } from '@/types'
+import { calculatePoints, cn, formatAddress, isAddressEqual } from '@/lib/utils'
 
 interface WalletOverviewProps {
   data: {
@@ -23,35 +23,37 @@ interface WalletOverviewProps {
   isLoading: boolean
 }
 
-const WalletOverviewSkeleton = () => (
-  <Card>
-    <CardHeader>
-      <Skeleton className="h-7 w-40" />
-      <Skeleton className="h-[25px] w-60" />
-    </CardHeader>
-    <CardContent>
-      <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-        <div className="flex flex-col gap-1">
-          <Skeleton className="h-5 w-20" />
-          <Skeleton className="h-7 w-24" />
+function WalletOverviewSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-7 w-40" />
+        <Skeleton className="h-[25px] w-60" />
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-7 w-24" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-7 w-24" />
+          </div>
+          <div className="flex flex-col items-end md:items-start gap-1">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-7 w-24" />
+          </div>
+          <div className="col-span-3 md:col-span-2 flex flex-col gap-1">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-2 w-full" />
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <Skeleton className="h-5 w-20" />
-          <Skeleton className="h-7 w-24" />
-        </div>
-        <div className="flex flex-col items-end md:items-start gap-1">
-          <Skeleton className="h-5 w-20" />
-          <Skeleton className="h-7 w-24" />
-        </div>
-        <div className="col-span-3 md:col-span-2 flex flex-col gap-1">
-          <Skeleton className="h-5 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-2 w-full" />
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-)
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function WalletOverview({ data, isLoading }: WalletOverviewProps) {
   const { address, transactions, tokens } = data
@@ -59,8 +61,8 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
   const [wallets] = useAtom(walletsAtom)
 
   const walletTitle = useMemo(
-    () => wallets.find((w) => isAddressEqual(w.address, address))?.label || '未命名钱包',
-    [wallets, address]
+    () => wallets.find(w => isAddressEqual(w.address, address))?.label || '未命名钱包',
+    [wallets, address],
   )
 
   if (isLoading) {
@@ -69,8 +71,8 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
 
   const tradingValue = transactions
     ?.filter(
-      (tx) =>
-        tx.status === 'success' && alphaTokens.some((token) => isAddressEqual(token.contractAddress, tx.to.address))
+      tx =>
+        tx.status === 'success' && alphaTokens.some(token => isAddressEqual(token.contractAddress, tx.to.address)),
     )
     .reduce((acc, tx) => acc + tx.from.amount * tx.from.price, 0)
 
@@ -78,7 +80,8 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
 
   const pnl = tokens.reduce((acc, token) => {
     const netFlow = token.in - token.out
-    if (netFlow === 0) return acc
+    if (netFlow === 0)
+      return acc
     const profit = netFlow * token.price
     return acc + profit
   }, 0)
@@ -114,9 +117,13 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
         <div className="grid grid-cols-4 md:grid-cols-5 gap-4">
           <div className="flex flex-col gap-1 col-span-2 md:col-span-1">
             <p className="text-sm text-muted-foreground flex items-center gap-1">
-              交易额<Badge className="h-5 rounded-full bg-muted-foreground">2x</Badge>
+              交易额
+              <Badge className="h-5 rounded-full bg-muted-foreground">2x</Badge>
             </p>
-            <p className="text-lg font-medium">${(tradingValue * 2).toFixed(2)}</p>
+            <p className="text-lg font-medium">
+              $
+              {(tradingValue * 2).toFixed(2)}
+            </p>
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-sm text-muted-foreground">积分</p>
@@ -125,7 +132,8 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
           <div className="flex flex-col items-end md:items-start gap-1">
             <p className="text-sm text-muted-foreground">利润</p>
             <p className={cn('text-lg font-medium', pnl > 0 ? 'text-green-600' : pnl < 0 ? 'text-red-600' : '')}>
-              ${pnl.toFixed(2)}
+              $
+              {pnl.toFixed(2)}
             </p>
           </div>
           <div className="col-span-4 md:col-span-2 flex flex-col gap-1">
@@ -135,9 +143,16 @@ export default function WalletOverview({ data, isLoading }: WalletOverviewProps)
             </div>
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-left">${range[0]}</span>
+                <span className="text-xs text-left">
+                  $
+                  {range[0]}
+                </span>
                 <span className="text-xs text-right">
-                  ${(tradingValue * 2).toFixed(2)} / ${range[1]}
+                  $
+                  {(tradingValue * 2).toFixed(2)}
+                  {' '}
+                  / $
+                  {range[1]}
                 </span>
               </div>
               <Progress value={((tradingValue * 2 - range[0]) / (range[1] - range[0])) * 100} className="h-2" />

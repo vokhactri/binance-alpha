@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useState } from 'react'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -14,7 +14,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             retry: 1,
           },
         },
-      })
+      }),
   )
 
   return (

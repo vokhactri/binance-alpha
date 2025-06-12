@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import { isAddress } from 'viem'
+import type { Hex } from 'viem'
 import { Search, X } from 'lucide-react'
-import { toast } from '@/components/ui/toast'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { isAddress } from 'viem'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { Hex } from 'viem'
+import { toast } from '@/components/ui/toast'
 
 interface TransactionSearchProps {
   isLoading?: boolean
@@ -52,9 +52,9 @@ export default function TransactionSearch({
           type="text"
           placeholder="请输入钱包地址 (0x...)"
           value={address}
-          onChange={(e) => setAddress(e.target.value as Hex)}
+          onChange={e => setAddress(e.target.value as Hex)}
           className="pr-8"
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          onKeyDown={e => e.key === 'Enter' && handleSearch()}
         />
         {address && (
           <button

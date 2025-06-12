@@ -1,11 +1,11 @@
+import { CircleAlert, CircleCheck, Info, XCircle } from 'lucide-react'
 import { toast as _toast } from 'sonner'
-import { CircleCheck, XCircle, CircleAlert, Info } from 'lucide-react'
 
 interface ToastOptions {
   duration?: number
 }
 
-const createToast = (type: 'success' | 'error' | 'warning' | 'info', message: string, options?: ToastOptions) => {
+function createToast(type: 'success' | 'error' | 'warning' | 'info', message: string, options?: ToastOptions) {
   const config = {
     success: {
       icon: CircleCheck,
@@ -36,7 +36,7 @@ const createToast = (type: 'success' | 'error' | 'warning' | 'info', message: st
     ),
     {
       duration: options?.duration || 3000,
-    }
+    },
   )
 }
 

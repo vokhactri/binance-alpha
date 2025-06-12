@@ -1,5 +1,5 @@
-import WalletSelector from '@/components/wallet-selector'
 import TransactionSearch from '@/components/transaction-search'
+import WalletSelector from '@/components/wallet-selector'
 
 export default function Home() {
   return (

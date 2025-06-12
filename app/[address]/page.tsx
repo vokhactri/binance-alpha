@@ -1,18 +1,18 @@
 'use client'
 
-import { use } from 'react'
-import { motion } from 'motion/react'
+import type { Hex } from 'viem'
 import { AlertCircle } from 'lucide-react'
+import { motion } from 'motion/react'
+import { use } from 'react'
+import TransactionSearch from '@/components/transaction-search'
+import TransactionTable from '@/components/transaction-table'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import dayjs from '@/lib/dayjs'
-import { isAddressEqual, getDynamicTimeRange } from '@/lib/utils'
+import WalletOverview from '@/components/wallet-overview'
+import WalletSelector from '@/components/wallet-selector'
 import { useBlockNumber } from '@/hooks/use-block'
 import { useTransaction } from '@/hooks/use-transaction'
-import WalletSelector from '@/components/wallet-selector'
-import TransactionSearch from '@/components/transaction-search'
-import WalletOverview from '@/components/wallet-overview'
-import TransactionTable from '@/components/transaction-table'
-import type { Hex } from 'viem'
+import dayjs from '@/lib/dayjs'
+import { getDynamicTimeRange, isAddressEqual } from '@/lib/utils'
 
 export default function TransactionPage({ params }: { params: Promise<{ address: Hex }> }) {
   const { address } = use(params)

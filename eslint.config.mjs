@@ -1,22 +1,33 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { FlatCompat } from '@eslint/eslintrc'
+import antfu from '@antfu/eslint-config'
+import nextPlugin from '@next/eslint-plugin-next'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
-
-const eslintConfig = [
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+export default antfu(
   {
+    formatters: true,
+    react: true,
+    typescript: true,
+  },
+  jsxA11y.flatConfigs.recommended,
+  {
+    plugins: {
+      '@next/next': nextPlugin,
+    },
     rules: {
-      '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/no-explicit-any': 'off',
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
     },
   },
-]
-
-export default eslintConfig
+  {
+    rules: {
+      'no-console': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'react/no-array-index-key': 'off',
+      'react/no-context-provider': 'off',
+      'react-refresh/only-export-components': 'off',
+      'react-hooks-extra/no-direct-set-state-in-use-effect': 'off',
+      'jsx-a11y/no-autofocus': 'off',
+    },
+  },
+)

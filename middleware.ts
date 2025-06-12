@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/api/')) {
@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
     const referer = request.headers.get('referer')
     const allowedDomains = ['http://localhost:3000', 'https://bn-alpha.site', 'https://www.bn-alpha.site']
     const isValidOrigin = origin && allowedDomains.includes(origin)
-    const isValidReferer = referer && allowedDomains.some((domain) => referer.startsWith(domain))
+    const isValidReferer = referer && allowedDomains.some(domain => referer.startsWith(domain))
 
     if (!isValidOrigin && !isValidReferer) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -16,7 +16,7 @@ export function middleware(request: NextRequest) {
     const userAgent = request.headers.get('user-agent')
     const blockedUserAgents = ['curl/', 'wget/', 'python-requests/', 'postman', 'insomnia', 'httpie']
 
-    if (userAgent && blockedUserAgents.some((blocked) => userAgent.toLowerCase().includes(blocked))) {
+    if (userAgent && blockedUserAgents.some(blocked => userAgent.toLowerCase().includes(blocked))) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

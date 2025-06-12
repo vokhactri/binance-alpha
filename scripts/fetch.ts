@@ -11,19 +11,19 @@ async function run() {
 const tokens: AlphaTokenInfo[] = [
 ${tokens
   .map(
-    (item) => `  {
+    item => `  {
     chainId: '${item.chainId}',
     contractAddress: '${item.contractAddress}',
     name: \`${item.name}\`,
     symbol: '${item.symbol}',
     decimals: ${item.decimals},
-  },`
+  },`,
   )
   .join('\n')}
 ]
 
 export default tokens
-`
+`,
   )
   console.log(c.green('Tokens fetched successfully!'))
 }

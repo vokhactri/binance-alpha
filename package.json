@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "fetch": "tsx scripts/fetch.ts",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -44,6 +44,7 @@
     "viem": "^2.29.4"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^4.14.1",
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.7",
     "@types/lodash-es": "^4.17.12",
@@ -52,6 +53,8 @@
     "@types/react-dom": "^19.1.5",
     "eslint": "^9.27.0",
     "eslint-config-next": "15.2.1",
+    "eslint-plugin-format": "^1.0.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "picocolors": "^1.1.1",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.7",

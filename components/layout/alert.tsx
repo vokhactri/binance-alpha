@@ -1,7 +1,7 @@
 'use client'
 
+import { InfoIcon, X } from 'lucide-react'
 import { useState } from 'react'
-import { X, InfoIcon } from 'lucide-react'
 import { Alert as _Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 

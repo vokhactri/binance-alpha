@@ -1,11 +1,11 @@
+import type { Hex } from 'viem'
+import type { TokenInfo, TransactionInfo } from '@/types'
+import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { zeroAddress } from 'viem'
-import { useQuery } from '@tanstack/react-query'
 import { useLocalStorage } from '@/hooks/use-local-storage'
 import { getTokenPrice } from '@/lib/api'
 import { isAddressEqual } from '@/lib/utils'
-import type { Hex } from 'viem'
-import type { TransactionInfo, TokenInfo } from '@/types'
 
 interface TokenPriceCache {
   symbol: string
@@ -20,7 +20,7 @@ async function computeTokenSummaries(
   tokenPriceCache: Record<string, TokenPriceCache>,
   setTokenPriceCache: (
     value: Record<string, TokenPriceCache> | ((val: Record<string, TokenPriceCache>) => Record<string, TokenPriceCache>)
-  ) => void
+  ) => void,
 ) {
   const tokenMap = new Map<Hex, TokenInfo>()
   const now = Date.now()
@@ -84,7 +84,8 @@ async function computeTokenSummaries(
       })
       cacheUpdates[cacheKey] = { symbol: token.symbol, price, timestamp: now }
       return { ...token, price }
-    } catch (e) {
+    }
+    catch (e) {
       console.error(`Failed to fetch price for ${token.symbol} (${token.address}):`, e)
       return {
         ...token,
@@ -96,7 +97,7 @@ async function computeTokenSummaries(
   const tokenSummaries = await Promise.all(pricePromises)
 
   if (Object.keys(cacheUpdates).length > 0) {
-    setTokenPriceCache((prev) => ({ ...prev, ...cacheUpdates }))
+    setTokenPriceCache(prev => ({ ...prev, ...cacheUpdates }))
   }
 
   return tokenSummaries
@@ -110,16 +111,17 @@ export function useTransaction(address: Hex, startblock = 0, endblock = 99999999
   }>({
     queryKey: ['transactions', address, startblock, endblock],
     queryFn: async () => {
-      if (startblock === 0) return { transactions: [], tokens: [] }
+      if (startblock === 0)
+        return { transactions: [], tokens: [] }
       const { data: transactions } = await axios.get<TransactionInfo[]>('/api/transactions', {
         params: { address, startblock, endblock },
       })
       const tokens = await computeTokenSummaries(transactions, tokenPriceCache, setTokenPriceCache)
       const transactionsWithPrices = transactions.map((tx) => {
-        const { price: fromTokenPrice } =
-          tokens.find((t) => isAddressEqual(t.address, tx.from.address)) || ({} as TokenInfo)
-        const { price: toTokenPrice } =
-          tokens.find((t) => isAddressEqual(t.address, tx.to.address)) || ({} as TokenInfo)
+        const { price: fromTokenPrice }
+          = tokens.find(t => isAddressEqual(t.address, tx.from.address)) || ({} as TokenInfo)
+        const { price: toTokenPrice }
+          = tokens.find(t => isAddressEqual(t.address, tx.to.address)) || ({} as TokenInfo)
         return {
           ...tx,
           from: {
@@ -137,6 +139,6 @@ export function useTransaction(address: Hex, startblock = 0, endblock = 99999999
         tokens,
       }
     },
-    enabled: !!address && !isNaN(startblock) && !isNaN(endblock),
+    enabled: !!address && !Number.isNaN(startblock) && !Number.isNaN(endblock),
   })
 }

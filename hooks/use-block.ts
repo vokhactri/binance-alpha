@@ -1,5 +1,5 @@
-import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import { useLocalStorage } from '@/hooks/use-local-storage'
 
 interface BlockCache {
@@ -7,7 +7,7 @@ interface BlockCache {
   blockNumber: number
 }
 
-export const useBlockNumber = (timestamp: number) => {
+export function useBlockNumber(timestamp: number) {
   const [blockCache, setBlockCache] = useLocalStorage<BlockCache | null>('blockCache', null)
   return useQuery({
     queryKey: ['blocks', timestamp],
@@ -24,6 +24,6 @@ export const useBlockNumber = (timestamp: number) => {
       })
       return response.data
     },
-    enabled: !isNaN(timestamp),
+    enabled: !Number.isNaN(timestamp),
   })
 }
