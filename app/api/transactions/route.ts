@@ -1,4 +1,5 @@
 import type { Hex } from 'viem'
+import type { NormalTransaction, TokenTransaction } from '@/types'
 import { NextResponse } from 'next/server'
 import { formatEther, formatUnits, zeroAddress } from 'viem'
 import { BN_DEX_ROUTER_ADDRESS, USDT_ADDRESS } from '@/constants'
@@ -51,12 +52,13 @@ export async function GET(request: Request) {
     return NextResponse.json([])
   }
 
-  while (
-    !rawNormalTransactions?.length
-    && rawTokenTransactions?.filter(tx =>
-      alphaTokens.some(token => isAddressEqual(token.contractAddress, tx.contractAddress)),
-    ).length
-  ) {
+  const isBinanceDexTx = (tx: NormalTransaction) =>
+    isAddressEqual(tx.from, address) && isAddressEqual(tx.to, BN_DEX_ROUTER_ADDRESS)
+
+  const isAlphaTokenTx = (tx: TokenTransaction) =>
+    alphaTokens.some(token => isAddressEqual(token.contractAddress, tx.contractAddress))
+
+  while (!rawNormalTransactions?.some(isBinanceDexTx) && rawTokenTransactions?.some(isAlphaTokenTx)) {
     console.log('No normal transactions found, retrying with txlist...')
     rawNormalTransactions = await getTransactions({
       action: 'txlist',
@@ -66,7 +68,7 @@ export async function GET(request: Request) {
     })
   }
 
-  while (rawNormalTransactions?.length && !rawTokenTransactions?.length) {
+  while (rawNormalTransactions?.some(isBinanceDexTx) && !rawTokenTransactions?.length) {
     console.log('No token transactions found, retrying with tokentx...')
     rawTokenTransactions = await getTransactions({
       action: 'tokentx',
@@ -76,9 +78,7 @@ export async function GET(request: Request) {
     })
   }
 
-  const normalTransactions = rawNormalTransactions.filter(
-    tx => isAddressEqual(tx.from, address) && isAddressEqual(tx.to, BN_DEX_ROUTER_ADDRESS),
-  )
+  const normalTransactions = rawNormalTransactions.filter(isBinanceDexTx)
 
   const tokenTransactions = rawTokenTransactions.filter(tx => BigInt(tx.value) === 0n || BigInt(tx.value) > 1n)
 
