@@ -1,2 +1,1 @@
 # Binance Alpha Trading Statistics
- 
