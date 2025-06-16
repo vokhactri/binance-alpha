@@ -3,6 +3,13 @@ import type { AlphaTokenInfo } from '@/types'
 const tokens: AlphaTokenInfo[] = [
   {
     chainId: '56',
+    contractAddress: '0x0e7779e698052f8fe56c415c3818fcf89de9ac6d',
+    name: `Ultiverse Token`,
+    symbol: 'ULTI',
+    decimals: 18,
+  },
+  {
+    chainId: '56',
     contractAddress: '0xf486ad071f3bee968384d2e39e2d8af0fcf6fd46',
     name: `Velo Protocol`,
     symbol: 'VELO',
