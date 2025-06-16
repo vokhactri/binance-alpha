@@ -1,11 +1,10 @@
 import type { Hex } from 'viem'
-import type { NormalTransaction, TokenTransaction } from '@/types'
 import { NextResponse } from 'next/server'
 import { formatEther, formatUnits, zeroAddress } from 'viem'
 import { BN_DEX_ROUTER_ADDRESS, USDT_ADDRESS } from '@/constants'
 import alphaTokens from '@/constants/tokens'
 import { getTransactions } from '@/lib/api'
-import { getSwapInfo, isAddressEqual, retry } from '@/lib/utils'
+import { getSwapInfo, isAddressEqual, isValidSourceToken, retry } from '@/lib/utils'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -52,13 +51,16 @@ export async function GET(request: Request) {
     return NextResponse.json([])
   }
 
-  const isBinanceDexTx = (tx: NormalTransaction) =>
-    isAddressEqual(tx.from, address) && isAddressEqual(tx.to, BN_DEX_ROUTER_ADDRESS)
+  const isBinanceDexTx = (from: Hex, to: Hex) =>
+    isAddressEqual(from, address) && isAddressEqual(to, BN_DEX_ROUTER_ADDRESS)
 
-  const isAlphaTokenTx = (tx: TokenTransaction) =>
-    alphaTokens.some(token => isAddressEqual(token.contractAddress, tx.contractAddress))
+  const isAlphaTokenTx = (contractAddress: Hex) =>
+    alphaTokens.some(token => isAddressEqual(token.contractAddress, contractAddress))
 
-  while (!rawNormalTransactions?.some(isBinanceDexTx) && rawTokenTransactions?.some(isAlphaTokenTx)) {
+  while (
+    !rawNormalTransactions?.some(tx => isBinanceDexTx(tx.from, tx.to))
+    && rawTokenTransactions?.some(tx => isAlphaTokenTx(tx.contractAddress))
+  ) {
     console.log('No normal transactions found, retrying with txlist...')
     rawNormalTransactions = await getTransactions({
       action: 'txlist',
@@ -68,7 +70,7 @@ export async function GET(request: Request) {
     })
   }
 
-  while (rawNormalTransactions?.some(isBinanceDexTx) && !rawTokenTransactions?.length) {
+  while (rawNormalTransactions?.some(tx => isBinanceDexTx(tx.from, tx.to)) && !rawTokenTransactions?.length) {
     console.log('No token transactions found, retrying with tokentx...')
     rawTokenTransactions = await getTransactions({
       action: 'tokentx',
@@ -78,7 +80,7 @@ export async function GET(request: Request) {
     })
   }
 
-  const normalTransactions = rawNormalTransactions.filter(isBinanceDexTx)
+  const normalTransactions = rawNormalTransactions.filter(tx => isBinanceDexTx(tx.from, tx.to))
 
   const tokenTransactions = rawTokenTransactions.filter(tx => BigInt(tx.value) === 0n || BigInt(tx.value) > 1n)
 
@@ -176,8 +178,8 @@ export async function GET(request: Request) {
       alphaTokens.some(
         token =>
           tx.status === 'failed'
-          || isAddressEqual(token.contractAddress, tx.from!.address)
-          || isAddressEqual(token.contractAddress, tx.to!.address),
+          || (isAddressEqual(token.contractAddress, tx.from!.address) && isValidSourceToken(tx.to!.address))
+          || (isAddressEqual(token.contractAddress, tx.to!.address) && isValidSourceToken(tx.from!.address)),
       ),
     )
     .sort((a, b) => b.timestamp - a.timestamp)

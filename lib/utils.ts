@@ -75,14 +75,20 @@ export function getDynamicTimeRange() {
   const now = dayjs.tz(undefined, 'Asia/Shanghai')
   const isBefore8AM = now.hour() < 8
   const baseDay = isBefore8AM ? now.subtract(1, 'day') : now
-  return [
-    baseDay.set('hour', 8).startOf('hour'),
-    baseDay.add(1, 'day').set('hour', 7).endOf('hour'),
-  ]
+  return [baseDay.set('hour', 8).startOf('hour'), baseDay.add(1, 'day').set('hour', 7).endOf('hour')]
 }
 
 export function isNativeToken(address: Hex) {
   return isAddressEqual(address, ethAddress) || isAddressEqual(address, zeroAddress)
+}
+
+export function isValidSourceToken(address: Hex) {
+  return (
+    isNativeToken(address)
+    || isAddressEqual(address, USDT_ADDRESS)
+    || isAddressEqual(address, USDC_ADDRESS)
+    || isAddressEqual(address, WBNB_ADDRESS)
+  )
 }
 
 export async function getTokenInfo(address: Hex) {

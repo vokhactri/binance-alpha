@@ -112,6 +112,13 @@ export async function getAlphaTokens(): Promise<AlphaTokenInfo[]> {
   return res.data.data.filter((token: AlphaTokenInfo) => token.chainId === '56')
 }
 
+export async function getSpotTokens(): Promise<string[]> {
+  const res = await axios.get(
+    'https://api.binance.com/api/v3/exchangeInfo',
+  )
+  return res.data.symbols.map((symbol: { baseAsset: string }) => symbol.baseAsset)
+}
+
 export async function getTransactions<T extends keyof TransactionActionMap>({
   action,
   address,
