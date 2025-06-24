@@ -9,7 +9,6 @@ import { getRandomElementFromArray } from '@/lib/utils'
 const client = axios.create({
   baseURL: 'https://api.etherscan.io',
   params: {
-    // apikey: process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY,
     chainId: 56,
   },
 })
