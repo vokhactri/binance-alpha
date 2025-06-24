@@ -178,8 +178,8 @@ export async function GET(request: Request) {
       alphaTokens.some(
         token =>
           tx.status === 'failed'
-          || (isAddressEqual(token.contractAddress, tx.from!.address) && isValidSourceToken(tx.to?.address || '' as Hex))
-          || (isAddressEqual(token.contractAddress, tx.to?.address || '' as Hex) && isValidSourceToken(tx.from!.address)),
+          || (isAddressEqual(token.contractAddress, tx.from?.address || '' as Hex) && isValidSourceToken(tx.to?.address || '' as Hex))
+          || (isAddressEqual(token.contractAddress, tx.to?.address || '' as Hex) && isValidSourceToken(tx.from?.address || '' as Hex)),
       ),
     )
     .sort((a, b) => b.timestamp - a.timestamp)
