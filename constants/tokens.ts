@@ -655,8 +655,8 @@ const tokens: AlphaTokenInfo[] = [
   {
     chainId: '56',
     contractAddress: '0xfebe8c1ed424dbf688551d4e2267e7a53698f0aa',
-    name: `VINU`,
-    symbol: 'Vita Inu',
+    name: `Vita Inu`,
+    symbol: 'VINU',
     decimals: 18,
   },
   {
