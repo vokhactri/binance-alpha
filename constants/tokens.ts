@@ -649,7 +649,7 @@ const tokens: AlphaTokenInfo[] = [
     chainId: '56',
     contractAddress: '0xb7c0007ab75350c582d5eab1862b872b5cf53f0c',
     name: `pumpBTC Governance Token`,
-    symbol: 'PUMP',
+    symbol: 'PUMPBTC',
     decimals: 18,
   },
   {
