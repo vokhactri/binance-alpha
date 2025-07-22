@@ -45,13 +45,13 @@ function TransactionTableSkeleton() {
     <Tabs value="0" className="w-full">
       <TabsList>
         <TabsTrigger value="0">
-          交易视图
+          Transaction View
           <Badge variant="secondary" className="flex items-center justify-center rounded-full bg-muted-foreground/30">
             0
           </Badge>
         </TabsTrigger>
         <TabsTrigger value="1">
-          代币视图
+          Token View
           <Badge variant="secondary" className="flex items-center justify-center rounded-full bg-muted-foreground/30">
             0
           </Badge>
@@ -65,16 +65,16 @@ function TransactionTableSkeleton() {
               <TableHeader className="bg-muted/50">
                 <TableRow>
                   <TableHead className="w-16">#</TableHead>
-                  <TableHead>交易哈希</TableHead>
+                  <TableHead>Transaction Hash</TableHead>
                   <TableHead className="flex items-center">
-                    时间
+                    Time
                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
                       <Clock className="h-3 w-3" />
                     </Button>
                   </TableHead>
-                  <TableHead>源代币</TableHead>
-                  <TableHead>目标代币</TableHead>
-                  <TableHead className="text-right">手续费</TableHead>
+                  <TableHead>Source Token</TableHead>
+                  <TableHead>Target Token</TableHead>
+                  <TableHead className="text-right">Gas Fee</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -121,11 +121,11 @@ function TransactionTableSkeleton() {
               <TableHeader className="bg-muted/50">
                 <TableRow>
                   <TableHead className="w-16">#</TableHead>
-                  <TableHead>代币</TableHead>
-                  <TableHead>流入</TableHead>
-                  <TableHead>流出</TableHead>
-                  <TableHead>净流入</TableHead>
-                  <TableHead className="text-right">利润</TableHead>
+                  <TableHead>Token</TableHead>
+                  <TableHead>Inflow</TableHead>
+                  <TableHead>Outflow</TableHead>
+                  <TableHead>Net Inflow</TableHead>
+                  <TableHead className="text-right">Profit</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -206,11 +206,11 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
   const filterTitle = () => {
     switch (settings.filter) {
       case 'buy':
-        return '买入'
+        return 'Buy'
       case 'sell':
-        return '卖出'
+        return 'Sell'
       default:
-        return '全部'
+        return 'All'
     }
   }
 
@@ -246,13 +246,13 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
       <div className="flex items-center justify-between">
         <TabsList>
           <TabsTrigger value="0">
-            交易视图
+            Transaction View
             <Badge variant="secondary" className="flex items-center justify-center rounded-full bg-muted-foreground/30">
               {filteredTransactions.length}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="1">
-            代币视图
+            Token View
             <Badge variant="secondary" className="flex items-center justify-center rounded-full bg-muted-foreground/30">
               {tokens.length}
             </Badge>
@@ -273,15 +273,15 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                     onValueChange={value =>
                       setSettings(prev => ({ ...prev, filter: value as 'all' | 'buy' | 'sell' }))}
                   >
-                    <MenubarRadioItem value="all">全部</MenubarRadioItem>
-                    <MenubarRadioItem value="buy">买入</MenubarRadioItem>
-                    <MenubarRadioItem value="sell">卖出</MenubarRadioItem>
+                    <MenubarRadioItem value="all">All</MenubarRadioItem>
+                    <MenubarRadioItem value="buy">Buy</MenubarRadioItem>
+                    <MenubarRadioItem value="sell">Sell</MenubarRadioItem>
                     <MenubarSeparator />
                     <MenubarCheckboxItem
                       checked={!settings.showFailed}
                       onCheckedChange={checked => setSettings(prev => ({ ...prev, showFailed: !checked }))}
                     >
-                      隐藏失败交易
+                      Hide Failed Transactions
                     </MenubarCheckboxItem>
                   </MenubarRadioGroup>
                 </MenubarContent>
@@ -298,9 +298,9 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
               <TableHeader className="bg-muted/50">
                 <TableRow>
                   <TableHead className="w-16">#</TableHead>
-                  <TableHead>交易哈希</TableHead>
+                  <TableHead>Transaction Hash</TableHead>
                   <TableHead className="flex items-center">
-                    时间
+                    Time
                     <Button
                       variant="ghost"
                       size="sm"
@@ -314,9 +314,9 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                       <Clock className="h-3 w-3" />
                     </Button>
                   </TableHead>
-                  <TableHead>源代币</TableHead>
-                  <TableHead>目标代币</TableHead>
-                  <TableHead className="text-right">手续费</TableHead>
+                  <TableHead>Source Token</TableHead>
+                  <TableHead>Target Token</TableHead>
+                  <TableHead className="text-right">Gas Fee</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -324,7 +324,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                   ? (
                       <TableRow>
                         <TableCell colSpan={7} className="h-24 text-center">
-                          暂无交易记录
+                          No transaction records
                         </TableCell>
                       </TableRow>
                     )
@@ -348,7 +348,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                                 href={`https://bscscan.com/tx/${transaction.hash}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center hover:text-primary"
+                                className="flex items-center hover:text-primary font-mono"
                               >
                                 {formatAddress(transaction.hash)}
                                 <ExternalLink className="ml-1 h-3 w-3" />
@@ -374,7 +374,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                                     <TooltipTrigger asChild>
                                       <div className="flex items-center gap-1">
                                         <span>{transaction.from.symbol}</span>
-                                        <span className="text-xs text-muted-foreground">
+                                        <span className="text-xs text-muted-foreground font-mono">
                                           {formatAddress(transaction.from.address)}
                                         </span>
                                       </div>
@@ -394,7 +394,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                                     <TooltipTrigger asChild>
                                       <div className="flex items-center gap-1">
                                         <span>{transaction.to.symbol}</span>
-                                        <span className="text-xs text-muted-foreground">
+                                        <span className="text-xs text-muted-foreground font-mono">
                                           {formatAddress(transaction.to.address)}
                                         </span>
                                       </div>
@@ -427,11 +427,11 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
               <TableHeader className="bg-muted/50">
                 <TableRow>
                   <TableHead className="w-16">#</TableHead>
-                  <TableHead>代币</TableHead>
-                  <TableHead>流入</TableHead>
-                  <TableHead>流出</TableHead>
-                  <TableHead>净流入</TableHead>
-                  <TableHead className="text-right">利润</TableHead>
+                  <TableHead>Token</TableHead>
+                  <TableHead>Inflow</TableHead>
+                  <TableHead>Outflow</TableHead>
+                  <TableHead>Net Inflow</TableHead>
+                  <TableHead className="text-right">Profit</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -439,7 +439,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                   ? (
                       <TableRow>
                         <TableCell colSpan={7} className="h-24 text-center">
-                          暂无代币记录
+                          No token records
                         </TableCell>
                       </TableRow>
                     )
@@ -461,7 +461,7 @@ export default function TransactionTable({ data, isLoading }: TransactionsTableP
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <span className="text-xs text-muted-foreground">{formatAddress(token.address)}</span>
+                                      <span className="text-xs text-muted-foreground font-mono">{formatAddress(token.address)}</span>
                                     </TooltipTrigger>
                                     <TooltipContent className="max-w-xs">
                                       <p className="font-mono text-xs">{token.address}</p>

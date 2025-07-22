@@ -26,12 +26,12 @@ export default function TransactionSearch({
 
   const handleSearch = () => {
     if (!address.trim()) {
-      toast.error('请输入钱包地址！')
+      toast.error('Please enter a wallet address!')
       return
     }
 
     if (!isAddress(address)) {
-      toast.error('钱包地址无效！')
+      toast.error('Invalid wallet address!')
       return
     }
 
@@ -50,10 +50,10 @@ export default function TransactionSearch({
           name="wallet-address"
           id="wallet-address-input"
           type="text"
-          placeholder="请输入钱包地址 (0x...)"
+          placeholder="Enter wallet address (0x...)"
           value={address}
           onChange={e => setAddress(e.target.value as Hex)}
-          className="pr-8"
+          className="pr-8 font-mono"
           onKeyDown={e => e.key === 'Enter' && handleSearch()}
         />
         {address && (
@@ -61,7 +61,7 @@ export default function TransactionSearch({
             type="button"
             onClick={() => setAddress('' as Hex)}
             className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            aria-label="清空输入"
+            aria-label="Clear input"
           >
             <X className="h-4 w-4" />
           </button>

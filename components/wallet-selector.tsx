@@ -101,7 +101,7 @@ function SortableWalletItem({
               <div className="flex flex-col gap-1">
                 <div className="font-medium text-sm truncate max-w-[200px] md:max-w-[300px]">{wallet.label}</div>
                 <div className="text-xs text-muted-foreground flex items-center gap-1">
-                  <span>{formatAddress(wallet.address)}</span>
+                  <span className="font-mono">{formatAddress(wallet.address)}</span>
                   {isAddressEqual(copiedAddress, wallet.address)
                     ? (
                         <CheckCheck className="size-3 cursor-pointer animate-bounce" />
@@ -218,16 +218,16 @@ export default function WalletSelector() {
 
   const handleAddWallet = () => {
     if (!newWalletAddress.trim()) {
-      toast.error('请输入钱包地址！')
+      toast.error('Please enter a wallet address!')
       return
     }
     if (!isAddress(newWalletAddress)) {
-      toast.error('钱包地址无效！')
+      toast.error('Invalid wallet address!')
       return
     }
     const isDuplicate = wallets.some(wallet => isAddressEqual(wallet.address, newWalletAddress))
     if (isDuplicate) {
-      toast.error('钱包地址已存在！')
+      toast.error('Wallet address already exists!')
       return
     }
     const newWallet: Wallet = {
@@ -237,14 +237,14 @@ export default function WalletSelector() {
     setWallets([...wallets, newWallet])
     setNewWalletAddress('' as Hex)
     setNewWalletLabel('')
-    toast.success('钱包已添加！')
+    toast.success('Wallet added!')
   }
 
   const handleDeleteWallet = (wallet: Wallet) => {
     setWallets(wallets.filter(w => !isAddressEqual(w.address, wallet.address)))
     if (isAddressEqual(wallet.address, selectedWalletAddress))
       setSelectedWalletAddress('' as Hex)
-    toast.success('钱包已删除！')
+    toast.success('Wallet deleted!')
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -285,9 +285,9 @@ export default function WalletSelector() {
     <>
       {wallets.length === 0
         ? (
-            <Button onClick={handleManageOpen} variant="outline" className="w-10 md:w-auto" aria-label="添加钱包">
+            <Button onClick={handleManageOpen} variant="outline" className="w-10 md:w-auto" aria-label="Add Wallet">
               <Plus className="h-4 w-4" />
-              <span className="hidden md:inline">添加钱包</span>
+              <span className="hidden md:inline">Add Wallet</span>
             </Button>
           )
         : (
@@ -303,7 +303,7 @@ export default function WalletSelector() {
               }}
             >
               <SelectTrigger id="wallet-selector" className="w-10 md:w-40">
-                <SelectValue placeholder="选择钱包">
+                <SelectValue placeholder="Select Wallet">
                   {selectedWallet && <span className="truncate">{selectedWallet.label}</span>}
                 </SelectValue>
               </SelectTrigger>
@@ -314,7 +314,7 @@ export default function WalletSelector() {
                   <div className="flex items-center px-3">
                     <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                     <input
-                      placeholder="搜索钱包..."
+                      placeholder="Search wallets..."
                       value={searchTerm}
                       onChange={e => setSearchTerm(e.target.value)}
                       className="flex h-8 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
@@ -328,7 +328,7 @@ export default function WalletSelector() {
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs" side="right">
-                          <p className="text-xs">钱包管理</p>
+                          <p className="text-xs">Wallet Management</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -337,7 +337,7 @@ export default function WalletSelector() {
               >
                 {filteredWallets.length === 0
                   ? (
-                      <div className="py-4 text-center text-sm text-muted-foreground">未找到钱包</div>
+                      <div className="py-4 text-center text-sm text-muted-foreground">No wallets found</div>
                     )
                   : (
                       filteredWallets.map(wallet => (
@@ -349,7 +349,7 @@ export default function WalletSelector() {
                         >
                           <div className="flex flex-col gap-1 items-start w-full max-w-[300px]">
                             <span className="font-medium text-sm w-full truncate">{wallet.label}</span>
-                            <span className="text-xs text-muted-foreground leading-relaxed w-full truncate">
+                            <span className="text-xs text-muted-foreground leading-relaxed w-full truncate font-mono">
                               {formatAddress(wallet.address)}
                             </span>
                           </div>
@@ -363,23 +363,23 @@ export default function WalletSelector() {
       <Dialog open={manageOpen} onOpenChange={setManageOpen}>
         <DialogContent className="w-[95vw] max-w-md mx-auto max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle>钱包管理</DialogTitle>
-            <DialogDescription className="sr-only">添加、编辑和删除您的钱包</DialogDescription>
+            <DialogTitle>Wallet Management</DialogTitle>
+            <DialogDescription className="sr-only">Add, edit and delete your wallets</DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 flex-1">
             <div className="border rounded-lg p-3 flex flex-col gap-3">
-              <h3 className="font-medium text-sm">添加钱包</h3>
+              <h3 className="font-medium text-sm">Add Wallet</h3>
               <div className="flex flex-col gap-2">
                 <Input
-                  placeholder="钱包地址 (0x...)"
+                  placeholder="Wallet Address (0x...)"
                   value={newWalletAddress}
                   onChange={e => setNewWalletAddress(e.target.value as Hex)}
-                  className="text-sm"
+                  className="text-sm font-mono"
                 />
                 <div className="flex gap-2">
                   <Input
-                    placeholder="钱包备注 (可选)"
+                    placeholder="Wallet Label (Optional)"
                     value={newWalletLabel}
                     onChange={e => setNewWalletLabel(e.target.value)}
                     className="text-sm flex-1"
@@ -393,7 +393,7 @@ export default function WalletSelector() {
 
             <div className="flex flex-col gap-2 flex-1 overflow-hidden">
               <h3 className="font-medium text-sm">
-                钱包列表 (
+                Wallet List (
                 {wallets.length}
                 )
               </h3>
@@ -432,7 +432,7 @@ export default function WalletSelector() {
           </div>
 
           <Button variant="outline" onClick={() => setManageOpen(false)} className="w-full">
-            完成
+            Done
           </Button>
         </DialogContent>
       </Dialog>

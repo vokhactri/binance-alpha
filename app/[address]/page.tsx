@@ -51,7 +51,7 @@ export default function TransactionPage({ params }: { params: Promise<{ address:
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-              {error instanceof Error ? error.message : '获取交易数据时发生错误，请稍后再试。'}
+              {error instanceof Error ? error.message : 'An error occurred while fetching transaction data. Please try again later.'}
             </AlertDescription>
           </Alert>
         </motion.div>

@@ -8,12 +8,13 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-8 mb-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">币安 Alpha 交易统计</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Binance Alpha Trading Statistics</h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          {startTime.format('YYYY-MM-DD HH:mm:ss')}
-          {' '}
+          {startTime.format('HH:mm:ss DD/MM/YYYY')}
+          &nbsp;
           ~
-          {endTime.format('YYYY-MM-DD HH:mm:ss')}
+          &nbsp;
+          {endTime.format('HH:mm:ss DD/MM/YYYY')}
         </p>
       </div>
       {children}

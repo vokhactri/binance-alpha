@@ -72,10 +72,10 @@ export function getPublicClient() {
 }
 
 export function getDynamicTimeRange() {
-  const now = dayjs.tz(undefined, 'Asia/Shanghai')
-  const isBefore8AM = now.hour() < 8
-  const baseDay = isBefore8AM ? now.subtract(1, 'day') : now
-  return [baseDay.set('hour', 8).startOf('hour'), baseDay.add(1, 'day').set('hour', 7).endOf('hour')]
+  const now = dayjs.tz(undefined, 'Asia/Ho_Chi_Minh')
+  const isBefore7AM = now.hour() < 7
+  const baseDay = isBefore7AM ? now.subtract(1, 'day') : now
+  return [baseDay.set('hour', 7).startOf('hour'), baseDay.add(1, 'day').set('hour', 6).endOf('hour')]
 }
 
 export function isNativeToken(address: Hex) {
